@@ -58,6 +58,12 @@
 
   
 	<dependencies>
+
+		<dependency>
+			<groupId>com.simsilica</groupId>
+			<artifactId>lemur</artifactId>
+			<version>1.16.0</version>
+		</dependency>
   
 		<!-- JMonkeyEngine -->   
 		<dependency>
