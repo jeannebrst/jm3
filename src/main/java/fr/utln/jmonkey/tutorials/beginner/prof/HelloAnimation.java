@@ -1,4 +1,4 @@
-package fr.utln.jmonkey.tutorials.beginner;
+package fr.utln.jmonkey.tutorials.beginner.prof;
 
 
 

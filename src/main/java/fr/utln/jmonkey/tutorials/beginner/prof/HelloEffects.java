@@ -1,4 +1,4 @@
-package fr.utln.jmonkey.tutorials.beginner;
+package fr.utln.jmonkey.tutorials.beginner.prof;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.effect.ParticleEmitter;
