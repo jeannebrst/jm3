@@ -2,6 +2,8 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
 import java.util.*;
 import com.jme3.app.SimpleApplication;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -26,9 +28,10 @@ public class SystemeSolaire extends SimpleApplication {
 
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
-	private float facteurTemps = 0.1f;
+	private float facteurTemps = 1;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
+	private BitmapText hudText;
 
 	/**
 	 * The main method
@@ -48,12 +51,12 @@ public class SystemeSolaire extends SimpleApplication {
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
-		planetes.add(new Planet(assetManager, "soleil", 20, 0, 0, 5, 0, 14.4f));
-		planetes.add(new Planet(assetManager, "mercure", 3, 25, 2, 3, 4.15f, 23.4f));
-		planetes.add(new Planet(assetManager, "venus", 4, 43, 3, 4, 4.15f, 23.4f));
-		planetes.add(new Planet(assetManager, "terre", 7, 63, 1, 2, 4.15f, 23.4f));
+		planetes.add(new Planet(assetManager, "Soleil", 20, 0, 0, 5, 0, 14.4f));
+		planetes.add(new Planet(assetManager, "Mercure", 3, 25, 2, 3, 4.15f, 23.4f));
+		planetes.add(new Planet(assetManager, "Venus", 4, 43, 3, 4, 4.15f, 23.4f));
+		planetes.add(new Planet(assetManager, "Terre", 7, 63, 1, 2, 4.15f, 23.4f));
 		
-		Planet lune = new Planet(assetManager, "lune", 1, 10, 1,1,4.13f,0);
+		Planet lune = new Planet(assetManager, "Lune", 1, 10, 1,1,4.13f,0);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
@@ -75,16 +78,21 @@ public class SystemeSolaire extends SimpleApplication {
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
 		inputManager.addMapping("Rewind", new KeyTrigger(KeyInput.KEY_LEFT));
-
 		inputManager.addListener(actionListenerSpeed, "Forward", "Rewind");
 
 		// Pour changer de vue de planète
 		inputManager.addMapping("NextPlanet", new KeyTrigger(KeyInput.KEY_UP));
 		inputManager.addMapping("PreviousPlanet", new KeyTrigger(KeyInput.KEY_DOWN));
-
 		inputManager.addListener(actionListenerView, "NextPlanet", "PreviousPlanet");
 
-		
+		// Pour afficher du texte
+		BitmapFont font = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        hudText = new BitmapText(font);
+        hudText.setSize(font.getCharSet().getRenderedSize()*2); // Taille du texte
+        hudText.setColor(com.jme3.math.ColorRGBA.White); // Couleur blanche
+        hudText.setText("Soleil"); // Texte initial
+        hudText.setLocalTranslation(10, settings.getHeight() - 10, 0); // Position en haut à gauche
+        guiNode.attachChild(hudText);
 	}
 
 	/* Use the main event loop to trigger repeating actions. */
@@ -93,7 +101,6 @@ public class SystemeSolaire extends SimpleApplication {
 		for (Planet p : planetes) {
 			p.update(facteurTemps*tpf);
 		}
-
 	}
 
 	@Override
@@ -111,9 +118,9 @@ public class SystemeSolaire extends SimpleApplication {
 		public void onAction(String name, boolean isPressed, float tpf) {
 			if (isPressed) {
 				if (name.equals("Forward")) {
-					facteurTemps += 2;}
+					facteurTemps += 1;}
 				if (name.equals("Rewind")) {
-					facteurTemps -= 2;}
+					facteurTemps -= 1;}
 			}
 		};
 	};
@@ -131,6 +138,7 @@ public class SystemeSolaire extends SimpleApplication {
 					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
 				}
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
+				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
 	};
