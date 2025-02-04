@@ -2,6 +2,7 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
 import java.util.*;
 import com.jme3.app.SimpleApplication;
+import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -26,9 +27,8 @@ public class SystemeSolaire extends SimpleApplication {
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
 	private float facteurTemps = 0.1f;
-	private boolean moving = false;
-	private float moveSpeed = 0.1f; // Vitesse du déplacement (ajuster si nécessaire)
-	private Vector2f lastMousePosition = null;
+	private int indexPlanete = 0;
+	private ChaseCamera chaseCam;
 
 	/**
 	 * The main method
@@ -60,22 +60,31 @@ public class SystemeSolaire extends SimpleApplication {
 			rootNode.attachChild(p.getOrbitePlanete());
 		}
 
-		cam.setLocation(new Vector3f(0,200,0));
-		cam.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+		// cam.setLocation(new Vector3f(0,200,0));
+		// cam.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+		flyCam.setEnabled(false);
 
+		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
+        chaseCam.setDefaultDistance(50); // Distance initiale de la caméra
+        chaseCam.setMinDistance(10);  // Distance minimale
+        chaseCam.setMaxDistance(200); // Distance maximale
+        chaseCam.setRotationSpeed(3); // Vitesse de rotation
+        chaseCam.setDragToRotate(true);
+		chaseCam.setLookAtOffset(new Vector3f(0,5,0));
+
+		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
 		inputManager.addMapping("Rewind", new KeyTrigger(KeyInput.KEY_LEFT));
 
 		inputManager.addListener(actionListenerSpeed, "Forward", "Rewind");
 
-		flyCam.setEnabled(false);
-		inputManager.addMapping("MoveCam", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-		inputManager.addListener(actionListenerMove, "MoveCam");
+		// Pour changer de vue de planète
+		inputManager.addMapping("NextPlanet", new KeyTrigger(KeyInput.KEY_UP));
+		inputManager.addMapping("PreviousPlanet", new KeyTrigger(KeyInput.KEY_DOWN));
 
-		// Associe les mouvements de la souris
-		inputManager.addMapping("MouseMove", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-		inputManager.addMapping("MouseMove", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-		inputManager.addListener(analogListenerMove, "MouseMove");
+		inputManager.addListener(actionListenerView, "NextPlanet", "PreviousPlanet");
+
+		
 	}
 
 	/* Use the main event loop to trigger repeating actions. */
@@ -98,45 +107,31 @@ public class SystemeSolaire extends SimpleApplication {
 	}
 
 	private ActionListener actionListenerSpeed = new ActionListener() {
-    @Override
-    public void onAction(String name, boolean isPressed, float tpf) {
-        if (isPressed) {
-			if (name.equals("Forward")) {
-				facteurTemps += 2;}
-			if (name.equals("Rewind")) {
-				facteurTemps -= 2;
+	@Override
+		public void onAction(String name, boolean isPressed, float tpf) {
+			if (isPressed) {
+				if (name.equals("Forward")) {
+					facteurTemps += 2;}
+				if (name.equals("Rewind")) {
+					facteurTemps -= 2;}
 			}
-		}
-		
+		};
 	};
-};
 
-	private ActionListener actionListenerMove = new ActionListener() {
+	private ActionListener actionListenerView = new ActionListener() {
 		@Override
 		public void onAction(String name, boolean isPressed, float tpf) {
-			if (name.equals("MoveCam")) {
-				moving = isPressed;
-				if (moving) {
-					lastMousePosition = inputManager.getCursorPosition().clone(); // Capture la position initiale
+			if (isPressed) {
+				if (name.equals("NextPlanet")) {
+					indexPlanete += 1;
+					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
 				}
+				if (name.equals("PreviousPlanet")) {
+					indexPlanete -= 1;
+					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
+				}
+				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
 			}
-		}
-	};
-
-	private AnalogListener analogListenerMove = new AnalogListener() {
-		@Override
-		public void onAnalog(String name, float value, float tpf) {
-			if (moving && lastMousePosition != null) { // Vérifie si le clic gauche est maintenu
-				Vector2f currentMousePos = inputManager.getCursorPosition();
-				Vector2f delta = currentMousePos.subtract(lastMousePosition); // Calcul du déplacement de la souris
-	
-				// Appliquer le déplacement à la caméra (indépendant du FPS)
-				cam.setLocation(cam.getLocation()
-					.add(cam.getLeft().mult(-delta.x * moveSpeed))  // Gauche/Droite
-					.add(cam.getUp().mult(delta.y * moveSpeed)));  // Haut/Bas
-	
-				lastMousePosition.set(currentMousePos); // Mise à jour de la dernière position de la souris
-			}
-		}
+		};
 	};
 }

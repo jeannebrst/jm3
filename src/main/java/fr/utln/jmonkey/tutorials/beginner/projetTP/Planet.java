@@ -84,5 +84,13 @@ public class Planet {
 		this.orbitePlanete = orbitePlanete;
 	}
 
+	public Geometry getPlanete() {
+		return planete;
+	}
+
+	public void setPlanete(Geometry planete) {
+		this.planete = planete;
+	}
+
 	
 }
