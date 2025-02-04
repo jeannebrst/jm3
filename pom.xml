@@ -130,6 +130,13 @@
 			<groupId>${jme3_g}</groupId>
 			<artifactId>jme3-vr</artifactId>
 			<version>${jme3_v}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.36</version>
+			<scope>provided</scope>
 		</dependency>	
 	</dependencies>
   
