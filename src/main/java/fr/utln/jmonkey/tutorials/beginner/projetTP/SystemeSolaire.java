@@ -9,6 +9,7 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Vector3f;
+import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
@@ -69,14 +70,18 @@ public class SystemeSolaire extends SimpleApplication {
 		fpp.addFilter(bloom);
 		viewPort.addProcessor(fpp);
 
+		AmbientLight ambient = new AmbientLight();
+		ambient.setColor(ColorRGBA.White.mult(0.05f));
+		rootNode.addLight(ambient);
+
 
 		flyCam.setEnabled(false);
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
 		chaseCam.setHideCursorOnRotate(false);
 		chaseCam.setInvertVerticalAxis(true);
         chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*10); // Distance initiale de la caméra
-        chaseCam.setMinDistance(30);  // Distance minimale
-        chaseCam.setMaxDistance(300); // Distance maximale
+        chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
+        chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*50); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
         chaseCam.setDragToRotate(true);
 		//chaseCam.setLookAtOffset(new Vector3f(0,5,0));
@@ -153,7 +158,7 @@ public class SystemeSolaire extends SimpleApplication {
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
 				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*10); // Distance initiale de la caméra
 				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);  // Distance minimale
-				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
+				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*50);
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
