@@ -14,24 +14,44 @@ public class Planet {
 	private Node axePlanete;
 	private Node orbitePlanete;
 	private float taillePlanete;
-	private float distanceSoleil;
 	private float vitesseRevolution;
 	private float vitesseRotation;
-	private float angleRevolution;
-	private float angleRotation;
+	private float demiPetitAxe;
+	private float demiGrandAxe;
+	private float angle = 0;
 	private List<Planet> satellites;
 
-	public Planet(AssetManager assetManager, String nom, float taillePlanet, float distanceSoleil, float vitesseRevolution, float vitesseRotation, float angleRevolution, float angleRotation) {
+	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiPetitAxe, float demiGrandAxe) {
 		this.nom = nom;
-		this.taillePlanete = taillePlanet;
-		this.distanceSoleil = distanceSoleil;
+		this.taillePlanete = taillePlanete;
 		this.vitesseRevolution = vitesseRevolution;
 		this.vitesseRotation = vitesseRotation;
-		this.angleRevolution = angleRevolution;
-		this.angleRotation = angleRotation;
+		this.demiPetitAxe = demiPetitAxe;
+		this.demiGrandAxe = demiGrandAxe;
 
 		initPlanete(assetManager);
 		initAxes();
+	}
+
+	public Planet(AssetManager assetManager, float taillePlanete, float vitesseRotation) {
+		this.taillePlanete = taillePlanete;
+		this.vitesseRotation = vitesseRotation;
+
+		Sphere sphere = new Sphere(32,32,taillePlanete);
+		planete = new Geometry("planete", sphere);
+
+		Material mat = new Material(assetManager,
+		"Common/MatDefs/Misc/Unshaded.j3md");
+		mat.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/Soleil.jpg"));
+		planete.setMaterial(mat);
+		planete.rotate(-FastMath.PI/2,0,0);
+
+		axePlanete = new Node("axePlanete");
+		axePlanete.setLocalTranslation(0,0,0);
+		axePlanete.attachChild(planete);
+
+		orbitePlanete = new Node("orbitePlanete");
+		orbitePlanete.attachChild(axePlanete);
 	}
 
 	private void initPlanete(AssetManager assetManager) {
@@ -39,15 +59,15 @@ public class Planet {
 		planete = new Geometry("planete", sphere);
 
 		Material mat = new Material(assetManager,
-		"Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/"+nom+".jpg"));
+		"Common/MatDefs/Light/Lighting.j3md");
+		mat.setTexture("DiffuseMap", assetManager.loadTexture("Textures/Terrain/"+nom+".jpg"));
 		planete.setMaterial(mat);
 		planete.rotate(-FastMath.PI/2,0,0);
 	}
 
 	private void initAxes() {
 		axePlanete = new Node("axePlanete");
-		axePlanete.setLocalTranslation(distanceSoleil,0,0);
+		axePlanete.setLocalTranslation(0,0,0);
 		axePlanete.attachChild(planete);
 
 		orbitePlanete = new Node("orbitePlanete");
@@ -63,17 +83,14 @@ public class Planet {
 	}
 
 	public void update(float tpf) {
-		orbitePlanete.rotate(0,vitesseRevolution*tpf,0);
-		axePlanete.rotate(0,vitesseRotation*tpf,0);
+		angle += vitesseRevolution*tpf*FastMath.TWO_PI;
+		if (angle > FastMath.TWO_PI) {
+			angle -= FastMath.TWO_PI;
+		}
+		float x = demiGrandAxe*FastMath.cos(angle);
+		float z = demiPetitAxe*FastMath.sin(angle);
 
-		// angleRevolution += vitesseRevolution*tpf;
-		// angleRotation += vitesseRotation*tpf;
-		
-		// float x = (float) (distanceSoleil*Math.cos(angleRevolution));
-		// float z = (float) (distanceSoleil*Math.sin(angleRevolution));
-		// planete.setLocalTranslation(x,0,z);
-		
-		// planete.rotate(0,vitesseRotation*tpf,0);
+		axePlanete.setLocalTranslation(x,0,z);
 	}
 
 	public Node getOrbitePlanete() {
@@ -98,6 +115,14 @@ public class Planet {
 
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+
+	public float getTaillePlanete() {
+		return taillePlanete;
+	}
+
+	public void setTaillePlanete(float taillePlanete) {
+		this.taillePlanete = taillePlanete;
 	}
 
 	

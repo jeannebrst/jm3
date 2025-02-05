@@ -6,20 +6,16 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseAxisTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.material.Material;
-import com.jme3.math.FastMath;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Vector3f;
-import com.jme3.math.Vector2f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.shape.Sphere;
+import com.jme3.light.PointLight;
+import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
+import com.jme3.util.SkyFactory;
+import com.jme3.texture.Texture;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
@@ -51,29 +47,39 @@ public class SystemeSolaire extends SimpleApplication {
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
-		planetes.add(new Planet(assetManager, "Soleil", 20, 0, 0, 5, 0, 14.4f));
-		planetes.add(new Planet(assetManager, "Mercure", 3, 25, 2, 3, 4.15f, 23.4f));
-		planetes.add(new Planet(assetManager, "Venus", 4, 43, 3, 4, 4.15f, 23.4f));
-		planetes.add(new Planet(assetManager, "Terre", 7, 63, 1, 2, 4.15f, 23.4f));
+		planetes.add(new Planet(assetManager, 2, 0));
+		planetes.add(new Planet(assetManager, "Mercure", 0.38f, 0.1f, 3, 3, 4));
+		planetes.add(new Planet(assetManager, "Venus", 0.95f, 0.07f, 4, 5.5f, 7));
+		planetes.add(new Planet(assetManager, "Terre", 1,  0.05f, 2, 8, 10));
 		
-		Planet lune = new Planet(assetManager, "Lune", 1, 10, 1,1,4.13f,0);
+		Planet lune = new Planet(assetManager, "Lune", 1.5f, 0.02f, 1, 2.5f, 3);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
 		}
+		
+		PointLight sunLight = new PointLight();
+		sunLight.setColor(ColorRGBA.White); // Lumière intense
+		sunLight.setRadius(0); // Portée de la lumière
+		sunLight.setPosition(Vector3f.ZERO); // Centre de la scène (même position que le Soleil)
+		rootNode.addLight(sunLight);
+		FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+		BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Scene);
+		fpp.addFilter(bloom);
+		viewPort.addProcessor(fpp);
 
-		// cam.setLocation(new Vector3f(0,200,0));
-		// cam.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+
 		flyCam.setEnabled(false);
-
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
-        chaseCam.setDefaultDistance(50); // Distance initiale de la caméra
-        chaseCam.setMinDistance(10);  // Distance minimale
-        chaseCam.setMaxDistance(200); // Distance maximale
+		chaseCam.setHideCursorOnRotate(false);
+		chaseCam.setInvertVerticalAxis(true);
+        chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*10); // Distance initiale de la caméra
+        chaseCam.setMinDistance(30);  // Distance minimale
+        chaseCam.setMaxDistance(300); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
         chaseCam.setDragToRotate(true);
-		chaseCam.setLookAtOffset(new Vector3f(0,5,0));
+		//chaseCam.setLookAtOffset(new Vector3f(0,5,0));
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
@@ -93,6 +99,11 @@ public class SystemeSolaire extends SimpleApplication {
         hudText.setText("Soleil"); // Texte initial
         hudText.setLocalTranslation(10, settings.getHeight() - 10, 0); // Position en haut à gauche
         guiNode.attachChild(hudText);
+
+		// Pour ajouter un fond
+		viewPort.setBackgroundColor(null);
+        Texture skyTexture = assetManager.loadTexture("Textures/Terrain/Espace.jpg");
+        rootNode.attachChild(SkyFactory.createSky(assetManager, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture));
 	}
 
 	/* Use the main event loop to trigger repeating actions. */
@@ -106,9 +117,11 @@ public class SystemeSolaire extends SimpleApplication {
 	@Override
 	public void start() {
 		AppSettings settings = new AppSettings(true);
-		settings.setWidth(1920);
-		settings.setHeight(1080);
-		settings.setFullscreen(false);
+		// settings.setWidth(1850);
+		// settings.setHeight(1010);
+		settings.setFullscreen(true);
+		settings.setResolution(1920, 1080);
+		setDisplayStatView(false);
 		setSettings(settings);
 		super.start();
 	}
@@ -138,6 +151,9 @@ public class SystemeSolaire extends SimpleApplication {
 					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
 				}
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
+				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*10); // Distance initiale de la caméra
+				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);  // Distance minimale
+				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
