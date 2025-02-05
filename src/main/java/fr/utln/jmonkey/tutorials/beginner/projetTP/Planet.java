@@ -91,6 +91,8 @@ public class Planet {
 		float z = demiPetitAxe*FastMath.sin(angle);
 
 		axePlanete.setLocalTranslation(x,0,z);
+
+		axePlanete.rotate(0,vitesseRotation*tpf,0);
 	}
 
 	public Node getOrbitePlanete() {
@@ -125,5 +127,11 @@ public class Planet {
 		this.taillePlanete = taillePlanete;
 	}
 
-	
+	public List<Planet> getSatellites() {
+		return satellites;
+	}
+
+	public Node getAxePlanete() {
+		return axePlanete;
+	}
 }

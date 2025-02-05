@@ -25,6 +25,7 @@ public class SystemeSolaire extends SimpleApplication {
 
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
+	private List<Planet> satellites;
 	private float facteurTemps = 1;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
@@ -53,12 +54,22 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.add(new Planet(assetManager, "Venus", 0.95f, 0.07f, 4, 5.5f, 7));
 		planetes.add(new Planet(assetManager, "Terre", 1,  0.05f, 2, 8, 10));
 		
-		Planet lune = new Planet(assetManager, "Lune", 1.5f, 0.02f, 1, 2.5f, 3);
+		Planet lune = new Planet(assetManager, "Lune", 0.27f, 0.02f, 1, 2.5f, 3);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
+			if (p.getSatellites()!=null) {
+				for (Planet s : p.getSatellites()) {
+					p.getAxePlanete().attachChild(s.getOrbitePlanete());
+				}
+			}
+			
 		}
+
+		// for (Planet s : satellites) {
+		// 	s.
+		// }
 		
 		PointLight sunLight = new PointLight();
 		sunLight.setColor(ColorRGBA.White); // Lumière intense
@@ -116,6 +127,11 @@ public class SystemeSolaire extends SimpleApplication {
 	public void simpleUpdate(float tpf) {
 		for (Planet p : planetes) {
 			p.update(facteurTemps*tpf);
+			if (p.getSatellites()!=null) {
+				for (Planet s : p.getSatellites()) {
+					s.update(facteurTemps*tpf);
+				}
+			}
 		}
 	}
 
