@@ -134,4 +134,12 @@ public class Planet {
 	public Node getAxePlanete() {
 		return axePlanete;
 	}
+
+	public float getPetitAxe() {
+		return demiPetitAxe;
+	}
+
+	public float getGrandAxe() {
+		return demiGrandAxe;
+	}
 }

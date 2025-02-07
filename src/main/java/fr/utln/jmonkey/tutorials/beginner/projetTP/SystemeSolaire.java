@@ -16,6 +16,12 @@ import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.util.SkyFactory;
+import com.jme3.math.FastMath;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
+import com.jme3.util.BufferUtils;
+import com.jme3.scene.Geometry;
+import com.jme3.material.Material;
 import com.jme3.texture.Texture;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
@@ -25,7 +31,6 @@ public class SystemeSolaire extends SimpleApplication {
 
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
-	private List<Planet> satellites;
 	private float facteurTemps = 1;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
@@ -45,20 +50,44 @@ public class SystemeSolaire extends SimpleApplication {
 	 */
 	public SystemeSolaire(){}
 
+	public void AjoutOrbite(Planet planete, float demiGrandAxe, float demiPetitAxe) {
+		int points = 100;
+		Vector3f[] pointsOrbite = new Vector3f[points];
+		for (int i=0; i<points; i++) {
+			float angle = i*FastMath.TWO_PI/points;
+			float x = demiGrandAxe*FastMath.cos(angle);
+			float z = demiPetitAxe*FastMath.sin(angle);
+			pointsOrbite[i] = new Vector3f(x,0,z);
+		}
+		Mesh orbitMesh = new Mesh();
+		orbitMesh.setMode(Mesh.Mode.LineLoop); // Utilisation du mode ligne continue
+		orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsOrbite));
+		orbitMesh.updateBound();
+		orbitMesh.setStatic();
+
+		// Création de la géométrie pour afficher la ligne
+		Geometry orbitGeom = new Geometry("Orbit", orbitMesh);
+		Material orbitMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		orbitMat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
+		orbitGeom.setMaterial(orbitMat);
+		rootNode.attachChild(orbitGeom);
+	}
+
 	@Override
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
-		planetes.add(new Planet(assetManager, 2, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 0.38f, 0.1f, 3, 3, 4));
-		planetes.add(new Planet(assetManager, "Venus", 0.95f, 0.07f, 4, 5.5f, 7));
-		planetes.add(new Planet(assetManager, "Terre", 1,  0.05f, 2, 8, 10));
+		planetes.add(new Planet(assetManager, 20, 0));
+		planetes.add(new Planet(assetManager, "Mercure", 3.8f, 0.172f, 3, 56.66f, 57.91f));
+		planetes.add(new Planet(assetManager, "Venus", 9.5f, 0.126f, 4, 108.19f, 108.2f));
+		planetes.add(new Planet(assetManager, "Terre", 10,  0.104f, 2, 149.57f, 149.6f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 0.27f, 0.02f, 1, 2.5f, 3);
+		Planet lune = new Planet(assetManager, "Lune", 2.7f, 0.003f, 1, 38f, 38.44f);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
+			AjoutOrbite(p, p.getGrandAxe(), p.getPetitAxe());
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
@@ -90,7 +119,7 @@ public class SystemeSolaire extends SimpleApplication {
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
 		chaseCam.setHideCursorOnRotate(false);
 		chaseCam.setInvertVerticalAxis(true);
-        chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*10); // Distance initiale de la caméra
+        chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*20); // Distance initiale de la caméra
         chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
         chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*50); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
@@ -172,7 +201,7 @@ public class SystemeSolaire extends SimpleApplication {
 					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
 				}
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
-				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*10); // Distance initiale de la caméra
+				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20); // Distance initiale de la caméra
 				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);  // Distance minimale
 				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*50);
 				hudText.setText(planetes.get(indexPlanete).getNom());
