@@ -23,6 +23,7 @@ import com.jme3.util.BufferUtils;
 import com.jme3.scene.Geometry;
 import com.jme3.material.Material;
 import com.jme3.texture.Texture;
+import com.jme3.scene.Node;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
@@ -50,7 +51,7 @@ public class SystemeSolaire extends SimpleApplication {
 	 */
 	public SystemeSolaire(){}
 
-	public void AjoutOrbite(Planet planete, float demiGrandAxe, float demiPetitAxe) {
+	public void AjoutOrbite(Planet planete, float demiGrandAxe, float demiPetitAxe, Node noeudAttache) {
 		int points = 100;
 		Vector3f[] pointsOrbite = new Vector3f[points];
 		for (int i=0; i<points; i++) {
@@ -70,7 +71,7 @@ public class SystemeSolaire extends SimpleApplication {
 		Material orbitMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		orbitMat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
 		orbitGeom.setMaterial(orbitMat);
-		rootNode.attachChild(orbitGeom);
+		noeudAttache.attachChild(orbitGeom);
 	}
 
 	@Override
@@ -87,34 +88,33 @@ public class SystemeSolaire extends SimpleApplication {
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
-			AjoutOrbite(p, p.getGrandAxe(), p.getPetitAxe());
+			AjoutOrbite(p, p.getGrandAxe(), p.getPetitAxe(),rootNode);
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
+					AjoutOrbite(s, s.getGrandAxe(), s.getPetitAxe(),s.getOrbitePlanete());
 				}
 			}
 			
 		}
-
-		// for (Planet s : satellites) {
-		// 	s.
-		// }
-		
+		// Pour que le soleil soit une source de lumière
 		PointLight sunLight = new PointLight();
-		sunLight.setColor(ColorRGBA.White); // Lumière intense
-		sunLight.setRadius(0); // Portée de la lumière
-		sunLight.setPosition(Vector3f.ZERO); // Centre de la scène (même position que le Soleil)
+		sunLight.setColor(ColorRGBA.White);
+		sunLight.setRadius(0);
+		sunLight.setPosition(Vector3f.ZERO);
 		rootNode.addLight(sunLight);
+		// Pour ajouter un effet de brillance sur le soleil
 		FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
 		BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Scene);
 		fpp.addFilter(bloom);
 		viewPort.addProcessor(fpp);
 
+		// Pour ajouter une lumière ambiente faible (sinon le dos des planètes était vraiment tout noir, pas très joli)
 		AmbientLight ambient = new AmbientLight();
-		ambient.setColor(ColorRGBA.White.mult(0.05f));
+		ambient.setColor(ColorRGBA.White.mult(0.02f));
 		rootNode.addLight(ambient);
 
-
+		// Réglages caméra et souris
 		flyCam.setEnabled(false);
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
 		chaseCam.setHideCursorOnRotate(false);
@@ -124,7 +124,6 @@ public class SystemeSolaire extends SimpleApplication {
         chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*50); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
         chaseCam.setDragToRotate(true);
-		//chaseCam.setLookAtOffset(new Vector3f(0,5,0));
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
@@ -201,8 +200,8 @@ public class SystemeSolaire extends SimpleApplication {
 					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
 				}
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
-				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20); // Distance initiale de la caméra
-				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);  // Distance minimale
+				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
+				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);
 				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*50);
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
