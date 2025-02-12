@@ -79,11 +79,13 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes = new ArrayList<>();
 
 		planetes.add(new Planet(assetManager, 20, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 3.8f, 0.172f, 3, 56.66f, 57.91f));
-		planetes.add(new Planet(assetManager, "Venus", 9.5f, 0.126f, 4, 108.19f, 108.2f));
-		planetes.add(new Planet(assetManager, "Terre", 10,  0.104f, 2, 149.57f, 149.6f));
+		planetes.add(new Planet(assetManager, "Mercure", 2.4f, 0.1728f, 3, 56.66f, 57.91f));
+		planetes.add(new Planet(assetManager, "Venus", 6, 0.126f, 4, 108.19f, 108.2f));
+		planetes.add(new Planet(assetManager, "Terre", 6.3f,  0.1044f, 2, 149.57f, 149.6f));
+		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 226.91f, 227.9f));
+		planetes.add(new Planet(assetManager, "Jupiter", 9, 0.0468f, 6, 777.4f, 778.3f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 2.7f, 0.003f, 1, 38f, 38.44f);
+		Planet lune = new Planet(assetManager, "Lune", 3.4f/2, 0.003f, 1, 12.6f+0.38f, 12.6f+0.3844f);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
@@ -116,12 +118,13 @@ public class SystemeSolaire extends SimpleApplication {
 
 		// Réglages caméra et souris
 		flyCam.setEnabled(false);
+		cam.setFrustumFar(30000);
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
 		chaseCam.setHideCursorOnRotate(false);
 		chaseCam.setInvertVerticalAxis(true);
-        chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*20); // Distance initiale de la caméra
+        chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*50); // Distance initiale de la caméra
         chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
-        chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*50); // Distance maximale
+        chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*100); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
         chaseCam.setDragToRotate(true);
 
@@ -168,6 +171,7 @@ public class SystemeSolaire extends SimpleApplication {
 		AppSettings settings = new AppSettings(true);
 		// settings.setWidth(1850);
 		// settings.setHeight(1010);
+		
 		settings.setFullscreen(true);
 		settings.setResolution(1920, 1080);
 		setDisplayStatView(false);
@@ -202,7 +206,7 @@ public class SystemeSolaire extends SimpleApplication {
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
 				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
 				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);
-				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*50);
+				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*100);
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
