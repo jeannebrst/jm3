@@ -16,17 +16,17 @@ public class Planet {
 	private float taillePlanete;
 	private float vitesseRevolution;
 	private float vitesseRotation;
-	private float demiPetitAxe;
 	private float demiGrandAxe;
 	private float angle = 0;
+	private float excentricite;
 	private List<Planet> satellites;
 
-	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiPetitAxe, float demiGrandAxe) {
+	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite) {
 		this.nom = nom;
 		this.taillePlanete = taillePlanete;
 		this.vitesseRevolution = vitesseRevolution;
 		this.vitesseRotation = vitesseRotation;
-		this.demiPetitAxe = demiPetitAxe;
+		this.excentricite = excentricite;
 		this.demiGrandAxe = demiGrandAxe;
 
 		initPlanete(assetManager);
@@ -66,11 +66,13 @@ public class Planet {
 	}
 
 	private void initAxes() {
+		float focalOffset = excentricite*demiGrandAxe;
 		axePlanete = new Node("axePlanete");
 		axePlanete.setLocalTranslation(0,0,0);
 		axePlanete.attachChild(planete);
 
 		orbitePlanete = new Node("orbitePlanete");
+		orbitePlanete.setLocalTranslation(-focalOffset,0,0);
 		orbitePlanete.attachChild(axePlanete);
 	}
 
@@ -88,7 +90,7 @@ public class Planet {
 			angle -= FastMath.TWO_PI;
 		}
 		float x = demiGrandAxe*FastMath.cos(angle);
-		float z = demiPetitAxe*FastMath.sin(angle);
+		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 
 		axePlanete.setLocalTranslation(x,0,z);
 
@@ -135,8 +137,8 @@ public class Planet {
 		return axePlanete;
 	}
 
-	public float getPetitAxe() {
-		return demiPetitAxe;
+	public float getExcentricite() {
+		return excentricite;
 	}
 
 	public float getGrandAxe() {

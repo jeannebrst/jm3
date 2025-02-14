@@ -51,13 +51,14 @@ public class SystemeSolaire extends SimpleApplication {
 	 */
 	public SystemeSolaire(){}
 
-	public void AjoutOrbite(Planet planete, float demiGrandAxe, float demiPetitAxe, Node noeudAttache) {
+	public void AjoutOrbite(Planet planete, float demiGrandAxe, float excentricite, Node noeudAttache) {
 		int points = 100;
+		float focalOffset = excentricite * demiGrandAxe;
 		Vector3f[] pointsOrbite = new Vector3f[points];
 		for (int i=0; i<points; i++) {
 			float angle = i*FastMath.TWO_PI/points;
-			float x = demiGrandAxe*FastMath.cos(angle);
-			float z = demiPetitAxe*FastMath.sin(angle);
+			float x = demiGrandAxe*FastMath.cos(angle)-focalOffset;
+			float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 			pointsOrbite[i] = new Vector3f(x,0,z);
 		}
 		Mesh orbitMesh = new Mesh();
@@ -78,23 +79,24 @@ public class SystemeSolaire extends SimpleApplication {
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
-		planetes.add(new Planet(assetManager, 20, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 2.4f, 0.1728f, 3, 56.66f, 57.91f));
-		planetes.add(new Planet(assetManager, "Venus", 6, 0.126f, 4, 108.19f, 108.2f));
-		planetes.add(new Planet(assetManager, "Terre", 6.3f,  0.1044f, 2, 149.57f, 149.6f));
-		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 226.91f, 227.9f));
-		planetes.add(new Planet(assetManager, "Jupiter", 9, 0.0468f, 6, 777.4f, 778.3f));
+		planetes.add(new Planet(assetManager, 100, 0));
+		planetes.add(new Planet(assetManager, "Mercure", 2.4f, 0.1728f, 3, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f));
+		planetes.add(new Planet(assetManager, "Venus", 6, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f));
+		planetes.add(new Planet(assetManager, "Terre", 6.3f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f));
+		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
+		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 6, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
+		planetes.add(new Planet(assetManager, "Saturne", 58, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 3.4f/2, 0.003f, 1, 12.6f+0.38f, 12.6f+0.3844f);
+		Planet lune = new Planet(assetManager, "Lune", 3.4f/2, 0.003f, 1, 12.6f+0.3844f, 0.0554f);
 		planetes.get(3).addSatellites(lune);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
-			AjoutOrbite(p, p.getGrandAxe(), p.getPetitAxe(),rootNode);
+			AjoutOrbite(p, p.getGrandAxe(), p.getExcentricite(),rootNode);
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
-					AjoutOrbite(s, s.getGrandAxe(), s.getPetitAxe(),s.getOrbitePlanete());
+					AjoutOrbite(s, s.getGrandAxe(), s.getExcentricite(),s.getOrbitePlanete());
 				}
 			}
 			
@@ -126,6 +128,7 @@ public class SystemeSolaire extends SimpleApplication {
         chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
         chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*100); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
+		chaseCam.setZoomSensitivity(70f);
         chaseCam.setDragToRotate(true);
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
