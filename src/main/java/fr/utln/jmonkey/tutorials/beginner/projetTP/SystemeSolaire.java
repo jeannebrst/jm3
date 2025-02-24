@@ -86,6 +86,8 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
 		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 6, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
 		planetes.add(new Planet(assetManager, "Saturne", 58, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
+		planetes.add(new Planet(assetManager, "Uranus", 25.3f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f));
+		planetes.add(new Planet(assetManager, "Neptune", 24.622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f));
 		
 		Planet lune = new Planet(assetManager, "Lune", 3.4f/2, 0.003f, 1, 12.6f+0.3844f, 0.0554f);
 		planetes.get(3).addSatellites(lune);
@@ -126,9 +128,9 @@ public class SystemeSolaire extends SimpleApplication {
 		chaseCam.setInvertVerticalAxis(true);
         chaseCam.setDefaultDistance(planetes.get(0).getTaillePlanete()*50); // Distance initiale de la caméra
         chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
-        chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*100); // Distance maximale
+        chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*500); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
-		chaseCam.setZoomSensitivity(70f);
+		chaseCam.setZoomSensitivity(planetes.get(0).getTaillePlanete());
         chaseCam.setDragToRotate(true);
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
@@ -209,7 +211,7 @@ public class SystemeSolaire extends SimpleApplication {
 				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
 				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
 				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);
-				chaseCam.setMaxDistance(planetes.get(indexPlanete).getTaillePlanete()*100);
+				chaseCam.setZoomSensitivity(planetes.get(indexPlanete).getTaillePlanete());
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
