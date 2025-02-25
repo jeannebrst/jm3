@@ -86,6 +86,7 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
 		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 6, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
 		planetes.add(new Planet(assetManager, "Saturne", 58, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
+		planetes.get(6).addRings(assetManager, "Anneaux_Sat");
 		planetes.add(new Planet(assetManager, "Uranus", 25.3f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f));
 		planetes.add(new Planet(assetManager, "Neptune", 24.622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f));
 		
