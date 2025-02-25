@@ -2,14 +2,12 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
 
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
-import com.jme3.texture.Texture;
 import com.jme3.scene.Node;
 import com.jme3.asset.AssetManager;
 import java.util.*;
@@ -96,7 +94,7 @@ public class Planet {
 
 	public void addRings(AssetManager assetManager, String nomTexture) {
 			Mesh ringMesh = new Mesh();
-			int numPoints = 500_000;
+			int numPoints = 800000;
 			FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(numPoints * 3);
 	
 			// float innerRingRadius = taillePlanete + 10f;

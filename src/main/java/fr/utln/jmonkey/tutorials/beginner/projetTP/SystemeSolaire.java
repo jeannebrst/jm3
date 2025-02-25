@@ -61,6 +61,7 @@ public class SystemeSolaire extends SimpleApplication {
 			float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 			pointsOrbite[i] = new Vector3f(x,0,z);
 		}
+		
 		Mesh orbitMesh = new Mesh();
 		orbitMesh.setMode(Mesh.Mode.LineLoop); // Utilisation du mode ligne continue
 		orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsOrbite));
@@ -84,14 +85,16 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.add(new Planet(assetManager, "Venus", 6, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f));
 		planetes.add(new Planet(assetManager, "Terre", 6.3f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f));
 		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
-		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 6, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
+		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 2, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
 		planetes.add(new Planet(assetManager, "Saturne", 58, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
 		planetes.get(6).addRings(assetManager, "Anneaux_Sat");
 		planetes.add(new Planet(assetManager, "Uranus", 25.3f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f));
 		planetes.add(new Planet(assetManager, "Neptune", 24.622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 3.4f/2, 0.003f, 1, 12.6f+0.3844f, 0.0554f);
+		Planet lune = new Planet(assetManager, "Lune", 1.7374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f);
 		planetes.get(3).addSatellites(lune);
+		Planet europe = new Planet(assetManager, "Europe", 1.5608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+6.71f, 0.0094f);
+		planetes.get(5).addSatellites(europe);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
@@ -133,6 +136,7 @@ public class SystemeSolaire extends SimpleApplication {
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
 		chaseCam.setZoomSensitivity(planetes.get(0).getTaillePlanete());
         chaseCam.setDragToRotate(true);
+		chaseCam.setMinVerticalRotation(-FastMath.PI/2);
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
