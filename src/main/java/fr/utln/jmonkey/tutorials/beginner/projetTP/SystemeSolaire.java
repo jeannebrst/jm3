@@ -14,6 +14,7 @@ import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.scene.Spatial;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.util.SkyFactory;
 import com.jme3.math.FastMath;
@@ -52,11 +53,14 @@ public class SystemeSolaire extends SimpleApplication {
 	public SystemeSolaire(){}
 
 	public void AjoutOrbite(Planet planete, float demiGrandAxe, float excentricite, Node noeudAttache) {
-		int points = 100;
+		int points = 500;
 		float focalOffset = excentricite * demiGrandAxe;
 		Vector3f[] pointsOrbite = new Vector3f[points];
 		for (int i=0; i<points; i++) {
 			float angle = i*FastMath.TWO_PI/points;
+			if (angle > FastMath.TWO_PI) {
+				angle -= FastMath.TWO_PI;
+			}
 			float x = demiGrandAxe*FastMath.cos(angle)-focalOffset;
 			float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 			pointsOrbite[i] = new Vector3f(x,0,z);
@@ -93,20 +97,37 @@ public class SystemeSolaire extends SimpleApplication {
 		
 		Planet lune = new Planet(assetManager, "Lune", 1.7374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f);
 		planetes.get(3).addSatellites(lune);
-		Planet europe = new Planet(assetManager, "Europe", 1.5608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+6.71f, 0.0094f);
+		Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.0076967f, 3, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f);
+		planetes.get(4).addSatellites(phobos);
+		Planet deimos = new Planet(assetManager, "Deimos", 0.6f, 0.04864f, 3, planetes.get(4).getTaillePlanete()+2.3460f, 0);
+		planetes.get(4).addSatellites(deimos);
+		Planet europe = new Planet(assetManager, "Europe", 1.5608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f);
 		planetes.get(5).addSatellites(europe);
+		Planet io = new Planet(assetManager, "Io", 1.821f, 0.62423f, 1, planetes.get(5).getTaillePlanete()+4.218f, 0.004f);
+		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
 			AjoutOrbite(p, p.getGrandAxe(), p.getExcentricite(),rootNode);
+			//rootNode.attachChild(Orbite.createOrbit(speed, assetManager, null))
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
 					AjoutOrbite(s, s.getGrandAxe(), s.getExcentricite(),s.getOrbitePlanete());
 				}
 			}
-			
 		}
+
+		String[] models = {
+            "Models/Asteroides/Eros.glb",
+			"Models/Asteroides/Itokawa.glb",
+			"Models/Asteroides/Vesta.glb",
+			"Models/Asteroides/Bennu.glb"
+        };
+
+		Asteroide asteroideGenerator = new Asteroide(assetManager, models);
+        asteroideGenerator.generateAsteroids(rootNode);
+		
 		// Pour que le soleil soit une source de lumière
 		PointLight sunLight = new PointLight();
 		sunLight.setColor(ColorRGBA.White);

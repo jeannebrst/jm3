@@ -1,0 +1,54 @@
+package fr.utln.jmonkey.tutorials.beginner.projetTP;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.Node;
+
+import java.util.Random;
+
+public class Asteroide {
+
+    //private final float minRadius = 5_236_000f;
+    //private final float maxRadius = 8_228_000f;
+	private final float minRadius = 5000;
+	private final float maxRadius = 8000;
+    private final int numAsteroids = 1000;
+    private AssetManager assetManager;
+	private String[] asteroidModels;
+
+    // Constructeur
+    public Asteroide(AssetManager assetManager,String[] asteroidModels) {
+        this.assetManager = assetManager;
+		this.asteroidModels = asteroidModels;
+    }
+
+    // Générer un nuage de points dans l'anneau et ajouter les Spatials
+    public void generateAsteroids(Node noeud) {
+        Random random = new Random();
+
+        for (int i = 0; i < numAsteroids; i++) {
+            // Calculer une position aléatoire dans l'anneau
+            float distance = minRadius + random.nextFloat() * (maxRadius - minRadius); // Rayon entre min et max
+            float angle = random.nextFloat() * 2 * (float) Math.PI; // Angle autour du centre
+
+            // Calculer les coordonnées X et Z pour la position dans le plan
+            float x = distance * (float) Math.cos(angle);
+            float z = distance * (float) Math.sin(angle);
+
+            // Ajouter une petite variation sur l'axe Y
+            float y = (random.nextFloat() - 0.5f) * 5f; // Variation aléatoire entre -2.5 et 2.5
+
+            // Positionner l'astéroïde à cette position
+            Vector3f position = new Vector3f(x, y, z);
+
+			String modelPath = asteroidModels[random.nextInt(asteroidModels.length)];
+
+            // Charger un modèle 3D pour représenter l'astéroïde, par exemple une sphère
+			Spatial asteroid = assetManager.loadModel(modelPath);
+            asteroid.setLocalTranslation(position);
+			asteroid.setLocalScale(0.005f);
+			noeud.attachChild(asteroid);
+        }
+    }
+}
