@@ -37,7 +37,7 @@ public class Asteroide {
             float z = distance * (float) Math.sin(angle);
 
             // Ajouter une petite variation sur l'axe Y
-            float y = (random.nextFloat() - 0.5f) * 5f; // Variation aléatoire entre -2.5 et 2.5
+            float y = (random.nextFloat() - 0.5f) * 100f; // Variation aléatoire entre -2.5 et 2.5
 
             // Positionner l'astéroïde à cette position
             Vector3f position = new Vector3f(x, y, z);

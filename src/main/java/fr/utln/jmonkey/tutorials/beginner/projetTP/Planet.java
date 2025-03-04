@@ -154,7 +154,7 @@ public class Planet {
 		}
 
 	public void update(float tpf) {
-		angle += vitesseRevolution*tpf*FastMath.TWO_PI;
+		angle -= vitesseRevolution*tpf*FastMath.TWO_PI;
 		if (angle > FastMath.TWO_PI) {
 			angle -= FastMath.TWO_PI;
 		}
