@@ -1,8 +1,8 @@
 package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
-
+import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
@@ -10,41 +10,56 @@ import com.jme3.scene.Node;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.util.BufferUtils;
 
-import java.util.LinkedList;
-
 public class Orbite {
-    private static final int MAX_POINTS = 500; // Nombre max de points pour la trace
-    private LinkedList<Vector3f> positions;
-    private Mesh orbitMesh;
-    private Geometry orbitGeom;
-    private Node parentNode;
-    
-    public Orbite(Node parentNode, Material material) {
-        this.positions = new LinkedList<>();
-        this.parentNode = parentNode;
-        
-        // Création du mesh
-        orbitMesh = new Mesh();
-        orbitMesh.setMode(Mesh.Mode.LineStrip);
-        orbitGeom = new Geometry("Orbit", orbitMesh);
-        orbitGeom.setMaterial(material);
-        
-        parentNode.attachChild(orbitGeom);
+    private Geometry orbiteGeo;
+    private Node orbiteNode;
+    private float demiGrandAxe;
+    private float excentricite;
+
+    public Orbite(AssetManager assetManager, float demiGrandAxe, float excentricite) {
+        this.demiGrandAxe = demiGrandAxe;
+        this.excentricite = excentricite;
+        this.orbiteNode = new Node("Orbite");
+        initOrbite(assetManager);
     }
-    
-    public void updateOrb(Vector3f planetPosition) {
-        positions.add(new Vector3f(planetPosition));
-        if (positions.size() > MAX_POINTS) {
-            positions.removeFirst(); // Supprime les anciens points pour éviter surcharge
+
+    private void initOrbite(AssetManager assetManager) {
+        int segments = 256;
+        Vector3f[] points = new Vector3f[segments + 1];
+        float demiPetitAxe = demiGrandAxe * FastMath.sqrt(1 - excentricite * excentricite);
+        float focalOffset = excentricite * demiGrandAxe;
+
+        for (int i = 0; i <= segments; i++) {
+            float angle = i * FastMath.TWO_PI / segments;
+            float x = demiGrandAxe * FastMath.cos(angle) - focalOffset;
+            float z = demiPetitAxe * FastMath.sin(angle);
+            points[i] = new Vector3f(x, 0, z);
         }
-        
-        updateMesh();
+
+        Mesh mesh = new Mesh();
+        mesh.setMode(Mesh.Mode.LineStrip);
+        mesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(points));
+        mesh.setBuffer(VertexBuffer.Type.Index, 1, BufferUtils.createIntBuffer(generateIndices(segments)));
+        mesh.updateBound();
+        mesh.setStatic();
+
+        orbiteGeo = new Geometry("OrbiteGeo", mesh);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
+        orbiteGeo.setMaterial(mat);
+
+        orbiteNode.attachChild(orbiteGeo);
     }
-    
-    private void updateMesh() {
-        Vector3f[] pointsArray = positions.toArray(new Vector3f[0]);
-        orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsArray));
-        orbitMesh.updateBound();
-        orbitMesh.updateCounts();
+
+    private int[] generateIndices(int segments) {
+        int[] indices = new int[segments + 1];
+        for (int i = 0; i <= segments; i++) {
+            indices[i] = i;
+        }
+        return indices;
+    }
+
+    public Node getOrbiteNode() {
+        return orbiteNode;
     }
 }

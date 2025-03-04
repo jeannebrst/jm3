@@ -8,6 +8,7 @@ import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.Vector3f;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
@@ -37,6 +38,7 @@ public class SystemeSolaire extends SimpleApplication {
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
 	private BitmapText hudText;
+	private boolean isChaseCamActive = true;
 
 	/**
 	 * The main method
@@ -52,68 +54,68 @@ public class SystemeSolaire extends SimpleApplication {
 	 */
 	public SystemeSolaire(){}
 
-	public void AjoutOrbite(Planet planete, float demiGrandAxe, float excentricite, Node noeudAttache) {
-		int points = 500;
-		float focalOffset = excentricite * demiGrandAxe;
-		Vector3f[] pointsOrbite = new Vector3f[points];
-		for (int i=0; i<points; i++) {
-			float angle = i*FastMath.TWO_PI/points;
-			if (angle > FastMath.TWO_PI) {
-				angle -= FastMath.TWO_PI;
-			}
-			float x = demiGrandAxe*FastMath.cos(angle)-focalOffset;
-			float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
-			pointsOrbite[i] = new Vector3f(x,0,z);
-		}
+	// public void AjoutOrbite(Planet planete, float demiGrandAxe, float excentricite, Node noeudAttache) {
+	// 	int points = 500;
+	// 	float focalOffset = excentricite * demiGrandAxe;
+	// 	Vector3f[] pointsOrbite = new Vector3f[points];
+	// 	for (int i=0; i<points; i++) {
+	// 		float angle = i*FastMath.TWO_PI/points;
+	// 		if (angle > FastMath.TWO_PI) {
+	// 			angle -= FastMath.TWO_PI;
+	// 		}
+	// 		float x = demiGrandAxe*FastMath.cos(angle)-focalOffset;
+	// 		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
+	// 		pointsOrbite[i] = new Vector3f(x,0,z);
+	// 	}
 		
-		Mesh orbitMesh = new Mesh();
-		orbitMesh.setMode(Mesh.Mode.LineLoop); // Utilisation du mode ligne continue
-		orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsOrbite));
-		orbitMesh.updateBound();
-		orbitMesh.setStatic();
+	// 	Mesh orbitMesh = new Mesh();
+	// 	orbitMesh.setMode(Mesh.Mode.LineLoop); // Utilisation du mode ligne continue
+	// 	orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsOrbite));
+	// 	orbitMesh.updateBound();
+	// 	orbitMesh.setStatic();
 
-		// Création de la géométrie pour afficher la ligne
-		Geometry orbitGeom = new Geometry("Orbit", orbitMesh);
-		Material orbitMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		orbitMat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
-		orbitGeom.setMaterial(orbitMat);
-		noeudAttache.attachChild(orbitGeom);
-	}
+	// 	// Création de la géométrie pour afficher la ligne
+	// 	Geometry orbitGeom = new Geometry("Orbit", orbitMesh);
+	// 	Material orbitMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+	// 	orbitMat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
+	// 	orbitGeom.setMaterial(orbitMat);
+	// 	noeudAttache.attachChild(orbitGeom);
+	// }
 
 	@Override
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
-		planetes.add(new Planet(assetManager, 100, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 2.4f, 0.1728f, 3, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f));
-		planetes.add(new Planet(assetManager, "Venus", 6, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f));
-		planetes.add(new Planet(assetManager, "Terre", 6.3f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f));
-		planetes.add(new Planet(assetManager, "Mars", 3.3f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
-		planetes.add(new Planet(assetManager, "Jupiter", 69, 0.0468f, 2, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
-		planetes.add(new Planet(assetManager, "Saturne", 58, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
+		planetes.add(new Planet(assetManager, 10, 0));
+		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 0.1728f, 3, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f));
+		planetes.add(new Planet(assetManager, "Venus", 0.6f, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f));
+		planetes.add(new Planet(assetManager, "Terre", 0.63f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f));
+		planetes.add(new Planet(assetManager, "Mars", 0.33f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f));
+		planetes.add(new Planet(assetManager, "Jupiter", 6.9f, 0.0468f, 2, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f));
+		planetes.add(new Planet(assetManager, "Saturne", 5.8f, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f));
 		planetes.get(6).addRings(assetManager, "Anneaux_Sat");
-		planetes.add(new Planet(assetManager, "Uranus", 25.3f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f));
-		planetes.add(new Planet(assetManager, "Neptune", 24.622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f));
+		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f));
+		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 1.7374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f);
+		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f);
 		planetes.get(3).addSatellites(lune);
-		Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.0076967f, 3, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f);
+		Planet phobos = new Planet(assetManager, "Phobos", 0.011267f, 0.0076967f, 3, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f);
 		planetes.get(4).addSatellites(phobos);
-		Planet deimos = new Planet(assetManager, "Deimos", 0.6f, 0.04864f, 3, planetes.get(4).getTaillePlanete()+2.3460f, 0);
+		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 0.04864f, 3, planetes.get(4).getTaillePlanete()+2.3460f, 0);
 		planetes.get(4).addSatellites(deimos);
-		Planet europe = new Planet(assetManager, "Europe", 1.5608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f);
+		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f);
 		planetes.get(5).addSatellites(europe);
-		Planet io = new Planet(assetManager, "Io", 1.821f, 0.62423f, 1, planetes.get(5).getTaillePlanete()+4.218f, 0.004f);
+		Planet io = new Planet(assetManager, "Io", 1.821f, 0.062423f, 1, planetes.get(5).getTaillePlanete()+4.218f, 0.004f);
 		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
-			AjoutOrbite(p, p.getGrandAxe(), p.getExcentricite(),rootNode);
+			//AjoutOrbite(p, p.getGrandAxe(), p.getExcentricite(),rootNode);
 			//rootNode.attachChild(Orbite.createOrbit(speed, assetManager, null))
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
-					AjoutOrbite(s, s.getGrandAxe(), s.getExcentricite(),s.getOrbitePlanete());
+					//AjoutOrbite(s, s.getGrandAxe(), s.getExcentricite(),s.getOrbitePlanete());
 				}
 			}
 		}
@@ -155,9 +157,19 @@ public class SystemeSolaire extends SimpleApplication {
         chaseCam.setMinDistance(planetes.get(0).getTaillePlanete()*2);  // Distance minimale
         chaseCam.setMaxDistance(planetes.get(0).getTaillePlanete()*500); // Distance maximale
         chaseCam.setRotationSpeed(3); // Vitesse de rotation
-		chaseCam.setZoomSensitivity(planetes.get(0).getTaillePlanete());
+		chaseCam.setZoomSensitivity(planetes.get(0).getTaillePlanete()*2);
         chaseCam.setDragToRotate(true);
 		chaseCam.setMinVerticalRotation(-FastMath.PI/2);
+
+		// Pour switch en flycam et gérer les deplacements
+		inputManager.addMapping("SwitchCam", new KeyTrigger(KeyInput.KEY_C));
+        inputManager.addListener(actionListenerCam, "SwitchCam");
+		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_Z));
+		inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
+		inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_Q));
+		inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+		inputManager.addListener(analogListenerMove, "Forward", "Backward", "Left", "Right");
+
 
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
@@ -241,5 +253,45 @@ public class SystemeSolaire extends SimpleApplication {
 				hudText.setText(planetes.get(indexPlanete).getNom());
 			}
 		};
+	};
+
+	private final ActionListener actionListenerCam = new ActionListener() {
+        @Override
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if (name.equals("SwitchCam") && isPressed) {
+                if (isChaseCamActive) {
+                    // Désactiver la ChaseCam et activer la FlyCam
+                    chaseCam.setEnabled(false);
+                    flyCam.setEnabled(true);
+					inputManager.setCursorVisible(true);
+					flyCam.setMoveSpeed(500);
+					flyCam.setDragToRotate(true);
+                } else {
+                    // Activer la ChaseCam et désactiver la FlyCam
+                    flyCam.setEnabled(false);
+                    chaseCam.setEnabled(true);
+                }
+                isChaseCamActive = !isChaseCamActive; // Inverser l'état
+            }
+        }
+    };
+
+	private AnalogListener analogListenerMove = new AnalogListener() {
+		@Override
+		public void onAnalog(String name, float value, float tpf) {
+			float speed = 20f * tpf;
+			Vector3f camDir = cam.getDirection().clone().mult(speed);
+			Vector3f camLeft = cam.getLeft().clone().mult(speed);
+	
+			if (name.equals("Forward")) {
+				cam.setLocation(cam.getLocation().add(camDir));
+			} else if (name.equals("Backward")) {
+				cam.setLocation(cam.getLocation().subtract(camDir));
+			} else if (name.equals("Left")) {
+				cam.setLocation(cam.getLocation().add(camLeft));
+			} else if (name.equals("Right")) {
+				cam.setLocation(cam.getLocation().subtract(camLeft));
+			}
+		}
 	};
 }

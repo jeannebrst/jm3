@@ -23,6 +23,7 @@ public class Planet {
 	private Node axePlanete;
 	private Node orbitePlanete;
 	private Node anneaux;
+	private Orbite orbite;
 	private float taillePlanete;
 	private float vitesseRevolution;
 	private float vitesseRotation;
@@ -38,6 +39,7 @@ public class Planet {
 		this.vitesseRotation = vitesseRotation;
 		this.excentricite = excentricite;
 		this.demiGrandAxe = demiGrandAxe;
+		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite);
 
 		initPlanete(assetManager);
 		initAxes();
@@ -85,6 +87,7 @@ public class Planet {
 		orbitePlanete = new Node("orbitePlanete");
 		orbitePlanete.setLocalTranslation(-focalOffset,0,0);
 		orbitePlanete.attachChild(axePlanete);
+		orbitePlanete.attachChild(orbite.getOrbiteNode());
 	}
 
 	public void addSatellites(Planet satellite) {
@@ -103,11 +106,11 @@ public class Planet {
 
 			int[] indices = new int[segments * 6];
 	
-			// float innerRingRadius = taillePlanete + 10f;
-			// float outerRingRadius = taillePlanete + 60f;
+			float rayonInterne = taillePlanete + 2f;
+			float rayonExterne = taillePlanete + 10f;
 
-			float rayonInterne = 66;
-			float rayonExterne = 120;
+			// float rayonInterne = 66;
+			// float rayonExterne = 120;
 	
 			for (int i = 0; i < segments; i++) {
 				float angle = (float) (i*FastMath.PI*2/segments);
@@ -158,12 +161,17 @@ public class Planet {
 		if (angle > FastMath.TWO_PI) {
 			angle -= FastMath.TWO_PI;
 		}
-		float x = demiGrandAxe*FastMath.cos(angle);
+		float focalOffset = excentricite*demiGrandAxe;
+		float x = demiGrandAxe*FastMath.cos(angle) - focalOffset;
 		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 
 		axePlanete.setLocalTranslation(x,0,z);
-
 		axePlanete.rotate(0,vitesseRotation*tpf,0);
+		//orbite.getOrbiteNode().setLocalTranslation(0, 0, 0);
+
+		if (orbite != null) {
+			orbite.getOrbiteNode().setLocalTranslation(0, 0, 0); 
+		}
 	}
 
 	public Node getOrbitePlanete() {

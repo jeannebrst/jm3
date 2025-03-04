@@ -3,6 +3,7 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import java.util.Arrays;
 import com.jme3.scene.Node;
 
 import java.util.Random;
@@ -13,14 +14,19 @@ public class Asteroide {
     //private final float maxRadius = 8_228_000f;
 	private final float minRadius = 5000;
 	private final float maxRadius = 8000;
-    private final int numAsteroids = 1000;
+    private final int numAsteroids = 500;
     private AssetManager assetManager;
 	private String[] asteroidModels;
+    private Spatial[] asteroidSpatials;
 
     // Constructeur
     public Asteroide(AssetManager assetManager,String[] asteroidModels) {
         this.assetManager = assetManager;
 		this.asteroidModels = asteroidModels;
+        asteroidSpatials = new Spatial[asteroidModels.length];
+        for (int i = 0; i < asteroidModels.length; i++) {
+            asteroidSpatials[i] = assetManager.loadModel(asteroidModels[i]);
+    }
     }
 
     // Générer un nuage de points dans l'anneau et ajouter les Spatials
@@ -43,9 +49,10 @@ public class Asteroide {
             Vector3f position = new Vector3f(x, y, z);
 
 			String modelPath = asteroidModels[random.nextInt(asteroidModels.length)];
+            int index = Arrays.asList(asteroidModels).indexOf(modelPath); // Trouver l'index
+            Spatial asteroid = asteroidSpatials[index].clone();
 
             // Charger un modèle 3D pour représenter l'astéroïde, par exemple une sphère
-			Spatial asteroid = assetManager.loadModel(modelPath);
             asteroid.setLocalTranslation(position);
 			asteroid.setLocalScale(0.005f);
 			noeud.attachChild(asteroid);
