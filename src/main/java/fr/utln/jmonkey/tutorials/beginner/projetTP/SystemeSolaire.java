@@ -54,34 +54,6 @@ public class SystemeSolaire extends SimpleApplication {
 	 */
 	public SystemeSolaire(){}
 
-	// public void AjoutOrbite(Planet planete, float demiGrandAxe, float excentricite, Node noeudAttache) {
-	// 	int points = 500;
-	// 	float focalOffset = excentricite * demiGrandAxe;
-	// 	Vector3f[] pointsOrbite = new Vector3f[points];
-	// 	for (int i=0; i<points; i++) {
-	// 		float angle = i*FastMath.TWO_PI/points;
-	// 		if (angle > FastMath.TWO_PI) {
-	// 			angle -= FastMath.TWO_PI;
-	// 		}
-	// 		float x = demiGrandAxe*FastMath.cos(angle)-focalOffset;
-	// 		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
-	// 		pointsOrbite[i] = new Vector3f(x,0,z);
-	// 	}
-		
-	// 	Mesh orbitMesh = new Mesh();
-	// 	orbitMesh.setMode(Mesh.Mode.LineLoop); // Utilisation du mode ligne continue
-	// 	orbitMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(pointsOrbite));
-	// 	orbitMesh.updateBound();
-	// 	orbitMesh.setStatic();
-
-	// 	// Création de la géométrie pour afficher la ligne
-	// 	Geometry orbitGeom = new Geometry("Orbit", orbitMesh);
-	// 	Material orbitMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-	// 	orbitMat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
-	// 	orbitGeom.setMaterial(orbitMat);
-	// 	noeudAttache.attachChild(orbitGeom);
-	// }
-
 	@Override
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
@@ -110,12 +82,9 @@ public class SystemeSolaire extends SimpleApplication {
 
 		for (Planet p : planetes) {
 			rootNode.attachChild(p.getOrbitePlanete());
-			//AjoutOrbite(p, p.getGrandAxe(), p.getExcentricite(),rootNode);
-			//rootNode.attachChild(Orbite.createOrbit(speed, assetManager, null))
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
 					p.getAxePlanete().attachChild(s.getOrbitePlanete());
-					//AjoutOrbite(s, s.getGrandAxe(), s.getExcentricite(),s.getOrbitePlanete());
 				}
 			}
 		}
@@ -237,20 +206,29 @@ public class SystemeSolaire extends SimpleApplication {
 	private ActionListener actionListenerView = new ActionListener() {
 		@Override
 		public void onAction(String name, boolean isPressed, float tpf) {
+			List<Planet> systemeOrdonne = new ArrayList<>();
+			for (Planet planete : planetes) {
+				systemeOrdonne.add(planete);
+				if (planete.getSatellites()!=null) {
+					for (Planet sat : planete.getSatellites()) {
+						systemeOrdonne.add(sat);
+					}
+				}
+			}
 			if (isPressed) {
 				if (name.equals("NextPlanet")) {
 					indexPlanete += 1;
-					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
+					indexPlanete = Math.floorMod(indexPlanete,systemeOrdonne.size());
 				}
 				if (name.equals("PreviousPlanet")) {
 					indexPlanete -= 1;
-					indexPlanete = Math.floorMod(indexPlanete,planetes.size());
+					indexPlanete = Math.floorMod(indexPlanete,systemeOrdonne.size());
 				}
-				chaseCam.setSpatial(planetes.get(indexPlanete).getPlanete());
-				chaseCam.setDefaultDistance(planetes.get(indexPlanete).getTaillePlanete()*20);
-				chaseCam.setMinDistance(planetes.get(indexPlanete).getTaillePlanete()*2);
-				chaseCam.setZoomSensitivity(planetes.get(indexPlanete).getTaillePlanete());
-				hudText.setText(planetes.get(indexPlanete).getNom());
+				chaseCam.setSpatial(systemeOrdonne.get(indexPlanete).getPlanete());
+				chaseCam.setDefaultDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*20);
+				chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*2);
+				chaseCam.setZoomSensitivity(systemeOrdonne.get(indexPlanete).getTaillePlanete());
+				hudText.setText(systemeOrdonne.get(indexPlanete).getNom());
 			}
 		};
 	};
@@ -282,7 +260,6 @@ public class SystemeSolaire extends SimpleApplication {
 			float speed = 20f * tpf;
 			Vector3f camDir = cam.getDirection().clone().mult(speed);
 			Vector3f camLeft = cam.getLeft().clone().mult(speed);
-	
 			if (name.equals("Forward")) {
 				cam.setLocation(cam.getLocation().add(camDir));
 			} else if (name.equals("Backward")) {
