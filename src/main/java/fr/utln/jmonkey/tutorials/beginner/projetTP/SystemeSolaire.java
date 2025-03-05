@@ -1,5 +1,6 @@
 package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
@@ -15,17 +16,17 @@ import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.scene.Spatial;
+//import com.jme3.scene.Spatial;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.util.SkyFactory;
 import com.jme3.math.FastMath;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.util.BufferUtils;
-import com.jme3.scene.Geometry;
-import com.jme3.material.Material;
+//import com.jme3.scene.Mesh;
+//import com.jme3.scene.VertexBuffer;
+//import com.jme3.util.BufferUtils;
+//import com.jme3.scene.Geometry;
+//import com.jme3.material.Material;
 import com.jme3.texture.Texture;
-import com.jme3.scene.Node;
+//import com.jme3.scene.Node;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
@@ -34,7 +35,12 @@ public class SystemeSolaire extends SimpleApplication {
 
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
-	private float facteurTemps = 1;
+	private int facteurTemps;
+	private double tempsRef;
+	private double tempsAnt;
+	private double tempsCpt;
+	private double tempsActuel;
+	SimpleDateFormat formatDate;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
 	private BitmapText hudText;
@@ -59,25 +65,25 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes = new ArrayList<>();
 
 		planetes.add(new Planet(assetManager, 10, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 0.1728f, 3, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f,0.03f));
-		planetes.add(new Planet(assetManager, "Venus", 0.6f, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f,177.36f));
-		planetes.add(new Planet(assetManager, "Terre", 0.63f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f,23.44f));
-		planetes.add(new Planet(assetManager, "Mars", 0.33f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f,25.19f));
-		planetes.add(new Planet(assetManager, "Jupiter", 6.9f, 0.0468f, 2, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f,3.12f));
-		planetes.add(new Planet(assetManager, "Saturne", 5.8f, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f,26.73f));
+		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 87.969f, 1.96f*1e-7, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f,0.03f,7));
+		planetes.add(new Planet(assetManager, "Venus", 0.6f, 224.701f, -4.76f*1e-8, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f,177.36f,3.39f));
+		planetes.add(new Planet(assetManager, "Terre", 0.63f,  365.25f, 1.16f*1e-5, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f,23.44f,0));
+		planetes.add(new Planet(assetManager, "Mars", 0.33f, 686.98f, 1.13f*1e-5, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f,25.19f,1.85f));
+		planetes.add(new Planet(assetManager, "Jupiter", 6.9f, 4332.59f, 2.8f*1e-5, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f,3.12f,1.304f));
+		planetes.add(new Planet(assetManager, "Saturne", 5.8f, 10759.22f, 2.61f*1e-5, 1429+planetes.get(0).getTaillePlanete(), 0.056f,26.73f,2.485f));
 		planetes.get(6).addRings(assetManager, "Anneaux_Sat");
-		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f,97.8f));
-		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f,29.58f));
+		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 30685.4f, -1.61f*1e-5, 2875+planetes.get(0).getTaillePlanete(), 0.046f,97.8f,0.772f));
+		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 60189, 1.72f*1e-5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f,29.58f,1.769f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f);
+		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 27.322f, 4.24f*1e-7, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f,5.145f);
 		planetes.get(3).addSatellites(lune);
-		Planet phobos = new Planet(assetManager, "Phobos", 0.011267f, 0.0076967f, 3, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0);
+		Planet phobos = new Planet(assetManager, "Phobos", 0.011267f, 0.3189f, 3.63f*1e-5, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0,1.093f);
 		planetes.get(4).addSatellites(phobos);
-		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 0.04864f, 3, planetes.get(4).getTaillePlanete()+2.3460f, 0,0);
+		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 1.2624f, 9.17f*1e-6, planetes.get(4).getTaillePlanete()+2.3460f, 0,0,0.93f);
 		planetes.get(4).addSatellites(deimos);
-		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f);
+		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.26f*1e-6, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.469f,0.47f);
 		planetes.get(5).addSatellites(europe);
-		Planet io = new Planet(assetManager, "Io", 1.821f, 0.062423f, 1, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f);
+		Planet io = new Planet(assetManager, "Io", 1.821f, 1.769f, 6.54f*1e-6, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
 		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
@@ -89,6 +95,13 @@ public class SystemeSolaire extends SimpleApplication {
 			}
 		}
 
+		//Gestion du temps
+		formatDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		tempsRef = System.currentTimeMillis();
+		tempsAnt = System.currentTimeMillis();
+		facteurTemps = 1;
+
+		// Générer mes astéroïdes
 		String[] models = {
             "Models/Asteroides/Eros.glb",
 			"Models/Asteroides/Itokawa.glb",
@@ -168,11 +181,17 @@ public class SystemeSolaire extends SimpleApplication {
 	/* Use the main event loop to trigger repeating actions. */
 	@Override
 	public void simpleUpdate(float tpf) {
+		tempsActuel = System.currentTimeMillis();
+		double tempsPasse = (tempsActuel - tempsAnt)*facteurTemps;
+		tempsCpt += tempsPasse;
+		tempsAnt = tempsActuel;
+		double temps = (tempsRef + tempsCpt)/1000;
+
 		for (Planet p : planetes) {
-			p.update(facteurTemps*tpf);
+			p.update(temps);
 			if (p.getSatellites()!=null) {
 				for (Planet s : p.getSatellites()) {
-					s.update(facteurTemps*tpf);
+					s.update(tempsPasse);
 				}
 			}
 		}
@@ -196,9 +215,9 @@ public class SystemeSolaire extends SimpleApplication {
 		public void onAction(String name, boolean isPressed, float tpf) {
 			if (isPressed) {
 				if (name.equals("Forward")) {
-					facteurTemps += 1;}
+					facteurTemps *= 100;}
 				if (name.equals("Rewind")) {
-					facteurTemps -= 1;}
+					facteurTemps /= 100;}
 			}
 		};
 	};

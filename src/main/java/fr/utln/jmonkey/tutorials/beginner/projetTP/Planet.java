@@ -25,15 +25,16 @@ public class Planet {
 	private Node anneaux;
 	private Orbite orbite;
 	private float taillePlanete;
-	private float vitesseRevolution;
-	private float vitesseRotation;
+	private double vitesseRevolution;
+	private double vitesseRotation;
 	private float demiGrandAxe;
 	private float angle = 0;
 	private float excentricite;
 	private float inclinaisonPlanete;
+	private float inclinaisonOrbite;
 	private List<Planet> satellites;
 
-	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete) {
+	public Planet(AssetManager assetManager, String nom, float taillePlanete, double vitesseRevolution, double vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete, float inclinaisonOrbite) {
 		this.nom = nom;
 		this.taillePlanete = taillePlanete;
 		this.vitesseRevolution = vitesseRevolution;
@@ -41,6 +42,7 @@ public class Planet {
 		this.excentricite = excentricite;
 		this.demiGrandAxe = demiGrandAxe;
 		this.inclinaisonPlanete = inclinaisonPlanete;
+		this.inclinaisonOrbite = inclinaisonOrbite;
 		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite);
 
 		initPlanete(assetManager);
@@ -90,6 +92,7 @@ public class Planet {
 
 		orbitePlanete = new Node("orbitePlanete");
 		orbitePlanete.setLocalTranslation(-focalOffset,0,0);
+		orbitePlanete.rotate(0,0,inclinaisonOrbite*FastMath.DEG_TO_RAD);
 		orbitePlanete.attachChild(axePlanete);
 		orbitePlanete.attachChild(orbite.getOrbiteNode());
 	}
@@ -160,8 +163,11 @@ public class Planet {
 			axePlanete.attachChild(anneaux);
 		}
 
-	public void update(float tpf) {
-		angle -= vitesseRevolution*tpf*FastMath.TWO_PI;
+	public void update(double temps) {
+		double tempsEnJours = (temps/(24*3600*1000));
+		double deltaAngle = (FastMath.TWO_PI / vitesseRevolution)*tempsEnJours;
+		angle += deltaAngle;
+		//angle -= vitesseRevolution*FastMath.TWO_PI;
 		if (angle > FastMath.TWO_PI) {
 			angle -= FastMath.TWO_PI;
 		}
@@ -170,7 +176,8 @@ public class Planet {
 		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
 
 		axePlanete.setLocalTranslation(x,0,z);
-		axePlanete.rotate(0,vitesseRotation*tpf,0);
+		double deltaAngleRotation = (FastMath.TWO_PI/vitesseRotation)*tempsEnJours;
+		axePlanete.rotate(0,(float)deltaAngleRotation,0);
 		//orbite.getOrbiteNode().setLocalTranslation(0, 0, 0);
 
 		if (orbite != null) {
