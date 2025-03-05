@@ -30,15 +30,17 @@ public class Planet {
 	private float demiGrandAxe;
 	private float angle = 0;
 	private float excentricite;
+	private float inclinaisonPlanete;
 	private List<Planet> satellites;
 
-	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite) {
+	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete) {
 		this.nom = nom;
 		this.taillePlanete = taillePlanete;
 		this.vitesseRevolution = vitesseRevolution;
 		this.vitesseRotation = vitesseRotation;
 		this.excentricite = excentricite;
 		this.demiGrandAxe = demiGrandAxe;
+		this.inclinaisonPlanete = inclinaisonPlanete;
 		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite);
 
 		initPlanete(assetManager);
@@ -50,6 +52,7 @@ public class Planet {
 		this.vitesseRotation = vitesseRotation;
 
 		Sphere sphere = new Sphere(32,32,taillePlanete);
+		sphere.setTextureMode(Sphere.TextureMode.Projected);
 		planete = new Geometry("planete", sphere);
 
 		Material mat = new Material(assetManager,
@@ -82,6 +85,7 @@ public class Planet {
 		float focalOffset = excentricite*demiGrandAxe;
 		axePlanete = new Node("axePlanete");
 		axePlanete.setLocalTranslation(0,0,0);
+		axePlanete.rotate(inclinaisonPlanete*FastMath.DEG_TO_RAD,0,0);
 		axePlanete.attachChild(planete);
 
 		orbitePlanete = new Node("orbitePlanete");
