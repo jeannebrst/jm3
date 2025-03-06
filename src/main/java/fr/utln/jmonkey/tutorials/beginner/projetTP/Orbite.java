@@ -2,6 +2,7 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -16,14 +17,14 @@ public class Orbite {
     private float demiGrandAxe;
     private float excentricite;
 
-    public Orbite(AssetManager assetManager, float demiGrandAxe, float excentricite) {
+    public Orbite(AssetManager assetManager, float demiGrandAxe, float excentricite, String nom) {
         this.demiGrandAxe = demiGrandAxe;
         this.excentricite = excentricite;
         this.orbiteNode = new Node("Orbite");
-        initOrbite(assetManager);
+        initOrbite(assetManager,nom);
     }
 
-    private void initOrbite(AssetManager assetManager) {
+    private void initOrbite(AssetManager assetManager, String nom) {
         int segments = 256;
         Vector3f[] points = new Vector3f[segments + 1];
         float demiPetitAxe = demiGrandAxe * FastMath.sqrt(1 - excentricite * excentricite);
@@ -45,7 +46,8 @@ public class Orbite {
 
         orbiteGeo = new Geometry("OrbiteGeo", mesh);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", com.jme3.math.ColorRGBA.White.mult(0.5f));
+        mat.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/"+nom+".jpg"));
+        mat.setColor("Color", new ColorRGBA(1.2f, 1.2f, 1.5f, 1.0f));  // Augmenter l'intensité des couleurs
         orbiteGeo.setMaterial(mat);
 
         orbiteNode.attachChild(orbiteGeo);

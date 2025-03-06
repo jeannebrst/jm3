@@ -4,6 +4,7 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -44,7 +45,7 @@ public class Planet {
 		this.demiGrandAxe = demiGrandAxe;
 		this.inclinaisonPlanete = inclinaisonPlanete;
 		this.inclinaisonOrbite = inclinaisonOrbite;
-		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite);
+		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite, nom);
 
 		initPlanete(assetManager);
 		initAxes();
@@ -202,8 +203,8 @@ public class Planet {
 		//Anomalie vraie θ
 		float theta = M + 2 * e * (float) Math.sin(M) + 1.25f * e * e * (float) Math.sin(2 * M);
 
-		float x = a * (float) Math.cos(theta)-a*e;
-		float z = a * (float) Math.sqrt(1 - e * e) * (float) Math.sin(theta);
+		float x = a * (float) Math.cos(-theta)-a*e;
+		float z = a * (float) Math.sqrt(1 - e * e) * (float) Math.sin(-theta);
 
 		Vector3f newPos = new Vector3f(x, 0f, z);
 		axePlanete.setLocalTranslation(newPos);

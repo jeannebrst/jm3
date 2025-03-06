@@ -201,7 +201,7 @@ public class SystemeSolaire extends SimpleApplication {
 
 		// Réglages caméra et souris
 		flyCam.setEnabled(false);
-		cam.setFrustumFar(3000);
+		cam.setFrustumFar(10000);
 		chaseCam = new ChaseCamera(cam, planetes.get(0).getPlanete(), inputManager);
 		chaseCam.setHideCursorOnRotate(false);
 		chaseCam.setInvertVerticalAxis(true);
