@@ -169,7 +169,7 @@ public class SystemeSolaire extends SimpleApplication {
 		Quad quad = new Quad(470,270);
 		Geometry rectangle = new Geometry("Rectangle transparent", quad);
 		Material matRectangle = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		matRectangle.setColor("Color", new ColorRGBA(0.5f, 0.5f, 0.5f, 0.15f));
+		matRectangle.setColor("Color", new ColorRGBA(0.5f, 0.5f, 0.5f, 0.1f));
 		matRectangle.getAdditionalRenderState().setBlendMode(com.jme3.material.RenderState.BlendMode.Alpha);
 		rectangle.setMaterial(matRectangle);
 		rectangle.setLocalTranslation(0,settings.getHeight()-300,0);
