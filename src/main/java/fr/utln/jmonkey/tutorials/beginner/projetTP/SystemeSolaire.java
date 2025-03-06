@@ -12,25 +12,21 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.Vector3f;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.util.SkyFactory;
 import com.jme3.math.FastMath;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.util.BufferUtils;
-import com.jme3.scene.Geometry;
-import com.jme3.material.Material;
 import com.jme3.texture.Texture;
-import com.jme3.scene.Node;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.simsilica.lemur.*;
-import com.simsilica.lemur.component.SpringGridLayout;
+import com.jme3.scene.shape.Quad;
+
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
@@ -42,7 +38,6 @@ public class SystemeSolaire extends SimpleApplication {
 	private double refTime;
 	private double antTime;
 	private double cptTime;
-	//private double actualTime;
 	SimpleDateFormat formatDate;
 	private Label dateLabel;
 	private Label facteurLabel;
@@ -171,6 +166,15 @@ public class SystemeSolaire extends SimpleApplication {
 		masse.setText("masse : "+ masses[0]);
 		guiNode.attachChild(masse);
 
+		Quad quad = new Quad(470,270);
+		Geometry rectangle = new Geometry("Rectangle transparent", quad);
+		Material matRectangle = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		matRectangle.setColor("Color", new ColorRGBA(0.5f, 0.5f, 0.5f, 0.15f));
+		matRectangle.getAdditionalRenderState().setBlendMode(com.jme3.material.RenderState.BlendMode.Alpha);
+		rectangle.setMaterial(matRectangle);
+		rectangle.setLocalTranslation(0,settings.getHeight()-300,0);
+		guiNode.attachChild(rectangle);
+
 		String[] models = {
             "Models/Asteroides/Eros.glb",
 			"Models/Asteroides/Itokawa.glb",
@@ -253,22 +257,7 @@ public class SystemeSolaire extends SimpleApplication {
 		viewPort.setBackgroundColor(null);
         Texture skyTexture = assetManager.loadTexture("Textures/Terrain/Espace.jpg");
         rootNode.attachChild(SkyFactory.createSky(assetManager, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture));
-
-		//initUI();
 	}
-
-	// private void initUI() {
-    //     Container container = new Container();
-    //     container.setLocalTranslation(10, settings.getHeight() - 10, 0);
-    //     guiNode.attachChild(container);
-
-    //     Label label = container.addChild(new Label("Vitesse du Temps"));
-    //     Slider slider = container.addChild(new Slider());
-    //     slider.setDelta(0.1f);
-    //     slider.setModel(new DefaultRangedValueModel(-1000000f, 1000000f, facteurTemps));
-    //     slider.setSnapValues(new float[]{0.01f, 0.1f}, false);
-    //     slider.addChangeListener((source, value) -> facteurTemps = value.floatValue());
-    // }
 
 	/* Use the main event loop to trigger repeating actions. */
 	@Override
@@ -284,7 +273,6 @@ public class SystemeSolaire extends SimpleApplication {
 		facteurLabel.setText("x"+facteurTemps);
 
 		for (Planet p : planetes) {
-			//p.update(facteurTemps*tpf);
 			if (p.getNom()!="Soleil"){
 				p.rotate(time);
 				p.rotateSelf(passedTime);
@@ -302,8 +290,6 @@ public class SystemeSolaire extends SimpleApplication {
 	@Override
 	public void start() {
 		AppSettings settings = new AppSettings(true);
-		// settings.setWidth(1850);
-		// settings.setHeight(1010);
 		
 		settings.setFullscreen(true);
 		settings.setResolution(1920, 1080);

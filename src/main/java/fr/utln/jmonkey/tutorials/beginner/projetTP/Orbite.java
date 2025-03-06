@@ -47,7 +47,7 @@ public class Orbite {
         orbiteGeo = new Geometry("OrbiteGeo", mesh);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/"+nom+".jpg"));
-        mat.setColor("Color", new ColorRGBA(1.2f, 1.2f, 1.5f, 1.0f));  // Augmenter l'intensité des couleurs
+        mat.setColor("Color", new ColorRGBA(1.2f, 1.2f, 2f, 1.0f));  // Augmenter l'intensité des couleurs
         orbiteGeo.setMaterial(mat);
 
         orbiteNode.attachChild(orbiteGeo);

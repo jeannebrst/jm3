@@ -10,18 +10,14 @@ import java.util.Random;
 
 public class Asteroide {
 
-    //private final float minRadius = 5_236_000f;
-    //private final float maxRadius = 8_228_000f;
 	private final float minRadius = 5000;
 	private final float maxRadius = 8000;
     private final int numAsteroids = 500;
-    private AssetManager assetManager;
 	private String[] asteroidModels;
     private Spatial[] asteroidSpatials;
 
     // Constructeur
     public Asteroide(AssetManager assetManager,String[] asteroidModels) {
-        this.assetManager = assetManager;
 		this.asteroidModels = asteroidModels;
         asteroidSpatials = new Spatial[asteroidModels.length];
         for (int i = 0; i < asteroidModels.length; i++) {

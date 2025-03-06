@@ -4,7 +4,6 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -29,7 +28,6 @@ public class Planet {
 	private float vitesseRevolution;
 	private float vitesseRotation;
 	private float demiGrandAxe;
-	//private float angle = 0;
 	private float excentricite;
 	private float inclinaisonPlanete;
 	private float inclinaisonOrbite;
@@ -125,9 +123,6 @@ public class Planet {
 	
 			float rayonInterne = taillePlanete + 2f;
 			float rayonExterne = taillePlanete + 10f;
-
-			// float rayonInterne = 66;
-			// float rayonExterne = 120;
 	
 			for (int i = 0; i < segments; i++) {
 				float angle = (float) (i*FastMath.PI*2/segments);
@@ -172,25 +167,6 @@ public class Planet {
 			anneaux.attachChild(ringGeo);
 			axePlanete.attachChild(anneaux);
 		}
-		/*
-	public void update(float tpf) {
-		angle -= vitesseRevolution*tpf*FastMath.TWO_PI;
-		if (angle > FastMath.TWO_PI) {
-			angle -= FastMath.TWO_PI;
-		}
-		float focalOffset = excentricite*demiGrandAxe;
-		float x = demiGrandAxe*FastMath.cos(angle) - focalOffset;
-		float z = demiGrandAxe*FastMath.sqrt(1-excentricite*excentricite)*FastMath.sin(angle);
-
-		axePlanete.setLocalTranslation(x,0,z);
-		axePlanete.rotate(0,vitesseRotation*tpf,0);
-		//orbite.getOrbiteNode().setLocalTranslation(0, 0, 0);
-
-		if (orbite != null) {
-			orbite.getOrbiteNode().setLocalTranslation(0, 0, 0); 
-		}
-	}
-		*/
 
 	public void rotate(double time){
 		float e = (float)excentricite; // Excentricité de la Terre
@@ -214,7 +190,6 @@ public class Planet {
 		vitesseRotation *= 3600;
 		float angle = FastMath.DEG_TO_RAD * (float)(time) * 360f / ((float)vitesseRotation);
 		planete.rotate(0, 0f, angle);
-		//System.out.println("Rotate " + name + " " + angle);
 	}
 
 	public Node getOrbitePlanete() {
