@@ -26,6 +26,12 @@ import com.jme3.scene.Geometry;
 import com.jme3.material.Material;
 import com.jme3.texture.Texture;
 import com.jme3.scene.Node;
+import com.simsilica.lemur.*;
+import com.simsilica.lemur.component.SpringGridLayout;
+
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
@@ -35,6 +41,12 @@ public class SystemeSolaire extends SimpleApplication {
 	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
 	private float facteurTemps = 1;
+	private double refTime;
+	private double antTime;
+	private double cptTime;
+	private double actualTime;
+	SimpleDateFormat formatDate;
+	private Label dateLabel;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
 	private BitmapText hudText;
@@ -59,25 +71,25 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes = new ArrayList<>();
 
 		planetes.add(new Planet(assetManager, 10, 0));
-		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 0.1728f, 3, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f,0.03f));
-		planetes.add(new Planet(assetManager, "Venus", 0.6f, 0.126f, 4, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f,177.36f));
-		planetes.add(new Planet(assetManager, "Terre", 0.63f,  0.1044f, 2, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f,23.44f));
-		planetes.add(new Planet(assetManager, "Mars", 0.33f, 0.0864f, 4, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f,25.19f));
-		planetes.add(new Planet(assetManager, "Jupiter", 6.9f, 0.0468f, 2, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f,3.12f));
-		planetes.add(new Planet(assetManager, "Saturne", 5.8f, 0.036f, 2, 1429+planetes.get(0).getTaillePlanete(), 0.056f,26.73f));
+		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 87.9693f, 58.6462f, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f,0.03f,7));
+		planetes.add(new Planet(assetManager, "Venus", 0.6f, 224.7010f, -243.018f, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f,177.36f,3.39f));
+		planetes.add(new Planet(assetManager, "Terre", 0.63f,  365.2569f, 0.9972f, 149.6f+planetes.get(0).getTaillePlanete(), 0.0167f,23.44f,0));
+		planetes.add(new Planet(assetManager, "Mars", 0.33f, 686.9601f, 1.0259f, 227.9f+planetes.get(0).getTaillePlanete(), 0.093f,25.19f,1.85f));
+		planetes.add(new Planet(assetManager, "Jupiter", 6.9f, 4335.3545f, 0.4135f, 778.3f+planetes.get(0).getTaillePlanete(), 0.048f,3.12f,1.304f));
+		planetes.add(new Planet(assetManager, "Saturne", 5.8f, 10757.7365f, 0.444f, 1429+planetes.get(0).getTaillePlanete(), 0.056f,26.73f,2.485f));
 		planetes.get(6).addRings(assetManager, "Anneaux_Sat");
-		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 0.0252f, 3, 2875+planetes.get(0).getTaillePlanete(), 0.046f,97.8f));
-		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 0.018f, 5, 4504+planetes.get(0).getTaillePlanete(), 0.0086f,29.58f));
+		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 30687.15f, -0.7183f, 2875+planetes.get(0).getTaillePlanete(), 0.046f,97.8f,0.772f));
+		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 60224.9036f, 0.6712f, 4504+planetes.get(0).getTaillePlanete(), 0.0086f,29.58f,1.769f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 0.003f, 1, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f);
+		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 27.3220f, 27.322f, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f,5.145f);
 		planetes.get(3).addSatellites(lune);
-		Planet phobos = new Planet(assetManager, "Phobos", 0.011267f, 0.0076967f, 3, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0);
+		Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.3189f, 0.3189f, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0,1.075f);
 		planetes.get(4).addSatellites(phobos);
-		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 0.04864f, 3, planetes.get(4).getTaillePlanete()+2.3460f, 0,0);
+		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 1.2624f, 1.2624f, planetes.get(4).getTaillePlanete()+2.3460f, 0,0,1.075f);
 		planetes.get(4).addSatellites(deimos);
-		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 0.0504f, 4, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f);
+		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.551f, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f,0.466f);
 		planetes.get(5).addSatellites(europe);
-		Planet io = new Planet(assetManager, "Io", 1.821f, 0.062423f, 1, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f);
+		Planet io = new Planet(assetManager, "Io", 1.821f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
 		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
@@ -88,6 +100,18 @@ public class SystemeSolaire extends SimpleApplication {
 				}
 			}
 		}
+
+		// Gestion du temps
+		formatDate = new SimpleDateFormat("dd|MM|yyyy HH:mm:ss");
+		refTime = System.currentTimeMillis();
+		antTime = System.currentTimeMillis();
+
+		GuiGlobals.initialize(this); // Initialisation Lemur
+		dateLabel = new Label("Date");
+		dateLabel.setFontSize(30);
+		dateLabel.setColor(ColorRGBA.White);
+		dateLabel.setLocalTranslation(10, settings.getHeight() - 10, 0);
+		guiNode.attachChild(dateLabel);
 
 		String[] models = {
             "Models/Asteroides/Eros.glb",
@@ -150,13 +174,17 @@ public class SystemeSolaire extends SimpleApplication {
 		inputManager.addMapping("PreviousPlanet", new KeyTrigger(KeyInput.KEY_DOWN));
 		inputManager.addListener(actionListenerView, "NextPlanet", "PreviousPlanet");
 
+		// Pour reset le temps
+		inputManager.addMapping("ResetTime", new KeyTrigger(KeyInput.KEY_BACK));
+		inputManager.addListener(actionListenerResetTime,"ResetTime");
+
 		// Pour afficher du texte
 		BitmapFont font = assetManager.loadFont("Interface/Fonts/Default.fnt");
         hudText = new BitmapText(font);
         hudText.setSize(font.getCharSet().getRenderedSize()*2); // Taille du texte
         hudText.setColor(com.jme3.math.ColorRGBA.White); // Couleur blanche
         hudText.setText("Soleil"); // Texte initial
-        hudText.setLocalTranslation(10, settings.getHeight() - 10, 0); // Position en haut à gauche
+        hudText.setLocalTranslation(10, settings.getHeight() - 60, 0); // Position en haut à gauche
         guiNode.attachChild(hudText);
 
 		// Pour ajouter un fond
@@ -168,13 +196,28 @@ public class SystemeSolaire extends SimpleApplication {
 	/* Use the main event loop to trigger repeating actions. */
 	@Override
 	public void simpleUpdate(float tpf) {
+		double actualTime = System.currentTimeMillis();
+		double passedTime = (actualTime-antTime)*facteurTemps;
+		cptTime += passedTime;
+		antTime = actualTime;
+		double time = refTime+cptTime;
+
+		Date date = new Date((long)(time));
+		dateLabel.setText(formatDate.format(date));
+
 		for (Planet p : planetes) {
-			p.update(facteurTemps*tpf);
-			if (p.getSatellites()!=null) {
-				for (Planet s : p.getSatellites()) {
-					s.update(facteurTemps*tpf);
+			//p.update(facteurTemps*tpf);
+			if (p.getNom()!="Soleil"){
+				p.rotate(time);
+				p.rotateSelf(passedTime);
+				if (p.getSatellites()!=null) {
+					for (Planet s : p.getSatellites()) {
+						s.rotate(time);
+						s.rotateSelf(passedTime);
+					}
 				}
 			}
+			
 		}
 	}
 
@@ -191,14 +234,48 @@ public class SystemeSolaire extends SimpleApplication {
 		super.start();
 	}
 
+	private void resetTime(){
+		refTime = System.currentTimeMillis();
+		antTime = System.currentTimeMillis();
+		cptTime = 0;
+		facteurTemps = 1;
+	}
+
+	private ActionListener actionListenerResetTime = new ActionListener() {
+	@Override
+		public void onAction(String name, boolean isPressed, float tpf) {
+			if (isPressed) {
+				resetTime();
+			}
+		}
+	};
+
 	private ActionListener actionListenerSpeed = new ActionListener() {
 	@Override
 		public void onAction(String name, boolean isPressed, float tpf) {
 			if (isPressed) {
 				if (name.equals("Forward")) {
-					facteurTemps += 1;}
+					if (facteurTemps==-1) {
+						facteurTemps = 1;
+					}
+					else if (facteurTemps < -1) {
+						facteurTemps /= 10;
+					}
+					else {
+						facteurTemps *= 10;
+					}
+				}
 				if (name.equals("Rewind")) {
-					facteurTemps -= 1;}
+					if (facteurTemps==1) {
+						facteurTemps = -1;
+					}
+					else if (facteurTemps > 1) {
+						facteurTemps /= 10;
+					}
+					else {
+						facteurTemps *= 10;
+					}
+				}
 			}
 		};
 	};

@@ -28,12 +28,13 @@ public class Planet {
 	private float vitesseRevolution;
 	private float vitesseRotation;
 	private float demiGrandAxe;
-	private float angle = 0;
+	//private float angle = 0;
 	private float excentricite;
 	private float inclinaisonPlanete;
+	private float inclinaisonOrbite;
 	private List<Planet> satellites;
 
-	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete) {
+	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete, float inclinaisonOrbite) {
 		this.nom = nom;
 		this.taillePlanete = taillePlanete;
 		this.vitesseRevolution = vitesseRevolution;
@@ -41,6 +42,7 @@ public class Planet {
 		this.excentricite = excentricite;
 		this.demiGrandAxe = demiGrandAxe;
 		this.inclinaisonPlanete = inclinaisonPlanete;
+		this.inclinaisonOrbite = inclinaisonOrbite;
 		this.orbite = new Orbite(assetManager, demiGrandAxe, excentricite);
 
 		initPlanete(assetManager);
@@ -48,6 +50,7 @@ public class Planet {
 	}
 
 	public Planet(AssetManager assetManager, float taillePlanete, float vitesseRotation) {
+		this.nom = "Soleil";
 		this.taillePlanete = taillePlanete;
 		this.vitesseRotation = vitesseRotation;
 
@@ -90,6 +93,7 @@ public class Planet {
 
 		orbitePlanete = new Node("orbitePlanete");
 		orbitePlanete.setLocalTranslation(-focalOffset,0,0);
+		orbitePlanete.rotate(inclinaisonOrbite*FastMath.DEG_TO_RAD,0,0);
 		orbitePlanete.attachChild(axePlanete);
 		orbitePlanete.attachChild(orbite.getOrbiteNode());
 	}
@@ -159,7 +163,7 @@ public class Planet {
 			anneaux.attachChild(ringGeo);
 			axePlanete.attachChild(anneaux);
 		}
-
+		/*
 	public void update(float tpf) {
 		angle -= vitesseRevolution*tpf*FastMath.TWO_PI;
 		if (angle > FastMath.TWO_PI) {
@@ -176,6 +180,32 @@ public class Planet {
 		if (orbite != null) {
 			orbite.getOrbiteNode().setLocalTranslation(0, 0, 0); 
 		}
+	}
+		*/
+
+	public void rotate(double time){
+		float e = (float)excentricite; // Excentricité de la Terre
+		float a = (float)demiGrandAxe; // Demi-grand axe
+		float T = (float)vitesseRevolution; // Période orbitale
+		T *= 86400000f;
+
+		//Anomalie moyenne (M)
+		float M = (float) (2 * Math.PI * (time% T) / T);
+		//Anomalie vraie θ
+		float theta = M + 2 * e * (float) Math.sin(M) + 1.25f * e * e * (float) Math.sin(2 * M);
+
+		float x = a * (float) Math.cos(theta)-a*e;
+		float z = a * (float) Math.sqrt(1 - e * e) * (float) Math.sin(theta);
+
+		Vector3f newPos = new Vector3f(x, 0f, z);
+		axePlanete.setLocalTranslation(newPos);
+	}
+
+	public void rotateSelf(double time){
+		vitesseRotation *= 3600;
+		float angle = FastMath.DEG_TO_RAD * (float)(time) * 360f / ((float)vitesseRotation);
+		planete.rotate(0, 0f, angle);
+		//System.out.println("Rotate " + name + " " + angle);
 	}
 
 	public Node getOrbitePlanete() {
