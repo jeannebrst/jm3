@@ -33,6 +33,7 @@ public class Planet {
 	private float inclinaisonPlanete;
 	private float inclinaisonOrbite;
 	private List<Planet> satellites;
+	private List<String> caracteristiques;
 
 	public Planet(AssetManager assetManager, String nom, float taillePlanete, float vitesseRevolution, float vitesseRotation, float demiGrandAxe, float excentricite, float inclinaisonPlanete, float inclinaisonOrbite) {
 		this.nom = nom;
@@ -104,6 +105,13 @@ public class Planet {
 		}
 		this.satellites.add(satellite);
 		this.axePlanete.attachChild(satellite.axePlanete);
+	}
+
+	public void addCaracteristique(String carac) {
+		if (caracteristiques == null) {
+			caracteristiques = new ArrayList<>();
+		}
+		this.caracteristiques.add(carac);
 	}
 
 	public void addRings(AssetManager assetManager, String nomTexture) {
@@ -254,5 +262,13 @@ public class Planet {
 
 	public float getGrandAxe() {
 		return demiGrandAxe;
+	}
+
+	public void setCaracteristiques(List<String> caracteristiques) {
+		this.caracteristiques = caracteristiques;
+	}
+
+	public Orbite getOrbite() {
+		return orbite;
 	}
 }

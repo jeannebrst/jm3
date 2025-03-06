@@ -15,7 +15,6 @@ import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.system.AppSettings;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.scene.Spatial;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.util.SkyFactory;
 import com.jme3.math.FastMath;
@@ -26,27 +25,31 @@ import com.jme3.scene.Geometry;
 import com.jme3.material.Material;
 import com.jme3.texture.Texture;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.SpringGridLayout;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 
 /** Sample 4 - how to trigger repeating actions from the main event loop.
  * In this example, you use the loop to make the planeteSoleil character
  * rotate continuously. */
 public class SystemeSolaire extends SimpleApplication {
 
-	// https://hub.jmonkeyengine.org/t/a-little-help-with-a-solar-system/42191
 	private List<Planet> planetes;
 	private float facteurTemps = 1;
 	private double refTime;
 	private double antTime;
 	private double cptTime;
-	private double actualTime;
+	//private double actualTime;
 	SimpleDateFormat formatDate;
 	private Label dateLabel;
+	private Label facteurLabel;
+	private String[] diametres;
+	private Label diametre;
+	private String[] masses;
+	private Label masse;
 	private int indexPlanete = 0;
 	private ChaseCamera chaseCam;
 	private BitmapText hudText;
@@ -70,6 +73,41 @@ public class SystemeSolaire extends SimpleApplication {
 	public void simpleInitApp() {
 		planetes = new ArrayList<>();
 
+		diametres = new String[]{
+			"1 392 684 km", //Soleil
+			"4 879 km", //Mercure
+			"12 742 km", //Venus
+			"12 104 km", //Terre
+			"3 474 km", //Lune
+			"3 390 km", //Mars
+			"12.4 km",  //Phobos
+			"22.2 km", //Deimos
+			"139 820 km", //Jupiter
+			"3 122 km", //Europe
+			"3 642 km", //Io
+			"116 460 km", //Saturne
+			"50 724 km", //Uranus
+			"49 528 km" //Neptune
+			};
+
+		masses = new String[]{ 
+			"1.989 x 10^30 kg", // Soleil
+			"3.301 x 10^23 kg", // Mercure
+			"4.867 x 10^24 kg", // Vénus
+			"5.972 x 10^24 kg", // Terre
+			"7.348 x 10^22 kg", // Lune
+			"6.417 x 10^23 kg", // Mars
+			"1.0659 x 10^16 kg", // Phobos
+			"1.476 x 10^15 kg", // Deimos
+			"1.898 x 10^27 kg", // Jupiter
+			"4.799 x 10^22 kg", // Europe
+			"8.931 x 10^22 kg", // Io
+			"5.683 x 10^26 kg", // Saturne
+			"8.681 x 10^25 kg", // Uranus
+			"1.024 x 10^26 kg"  // Neptune
+			};
+			
+		
 		planetes.add(new Planet(assetManager, 10, 0));
 		planetes.add(new Planet(assetManager, "Mercure", 0.24f, 87.9693f, 58.6462f, 57.91f+planetes.get(0).getTaillePlanete(), 0.206f,0.03f,7));
 		planetes.add(new Planet(assetManager, "Venus", 0.6f, 224.7010f, -243.018f, 108.2f+planetes.get(0).getTaillePlanete(), 0.0068f,177.36f,3.39f));
@@ -89,7 +127,7 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.get(4).addSatellites(deimos);
 		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.551f, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f,0.466f);
 		planetes.get(5).addSatellites(europe);
-		Planet io = new Planet(assetManager, "Io", 1.821f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
+		Planet io = new Planet(assetManager, "Io", 0.18216f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
 		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
@@ -102,7 +140,7 @@ public class SystemeSolaire extends SimpleApplication {
 		}
 
 		// Gestion du temps
-		formatDate = new SimpleDateFormat("dd|MM|yyyy HH:mm:ss");
+		formatDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		refTime = System.currentTimeMillis();
 		antTime = System.currentTimeMillis();
 
@@ -110,8 +148,28 @@ public class SystemeSolaire extends SimpleApplication {
 		dateLabel = new Label("Date");
 		dateLabel.setFontSize(30);
 		dateLabel.setColor(ColorRGBA.White);
-		dateLabel.setLocalTranslation(10, settings.getHeight() - 10, 0);
+		dateLabel.setLocalTranslation(settings.getWidth()-450, settings.getHeight() - 1000, 0);
 		guiNode.attachChild(dateLabel);
+
+		facteurLabel = new Label("Facteur");
+		facteurLabel.setFontSize(30);
+		facteurLabel.setColor(ColorRGBA.White);
+		facteurLabel.setLocalTranslation(settings.getWidth()-150, settings.getHeight() - 1000, 0);
+		guiNode.attachChild(facteurLabel);
+
+		diametre = new Label("diamètre");
+		diametre.setFontSize(35);
+		diametre.setColor(ColorRGBA.White);
+		diametre.setLocalTranslation(20, settings.getHeight() - 150, 0);
+		diametre.setText("diamètre : "+diametres[0]);
+		guiNode.attachChild(diametre);
+
+		masse = new Label("masse");
+		masse.setFontSize(35);
+		masse.setColor(ColorRGBA.White);
+		masse.setLocalTranslation(20, settings.getHeight() - 200, 0);
+		masse.setText("masse : "+ masses[0]);
+		guiNode.attachChild(masse);
 
 		String[] models = {
             "Models/Asteroides/Eros.glb",
@@ -129,6 +187,7 @@ public class SystemeSolaire extends SimpleApplication {
 		sunLight.setRadius(0);
 		sunLight.setPosition(Vector3f.ZERO);
 		rootNode.addLight(sunLight);
+
 		// Pour ajouter un effet de brillance sur le soleil
 		FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
 		BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Scene);
@@ -163,7 +222,6 @@ public class SystemeSolaire extends SimpleApplication {
 		inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
 		inputManager.addListener(analogListenerMove, "Forward", "Backward", "Left", "Right");
 
-
 		// Pour augmenter ou réduire la vitesse de rotation en orbite
 		inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_RIGHT));
 		inputManager.addMapping("Rewind", new KeyTrigger(KeyInput.KEY_LEFT));
@@ -178,20 +236,39 @@ public class SystemeSolaire extends SimpleApplication {
 		inputManager.addMapping("ResetTime", new KeyTrigger(KeyInput.KEY_BACK));
 		inputManager.addListener(actionListenerResetTime,"ResetTime");
 
+		//Pour cacher/afficher les orbites
+		inputManager.addMapping("HideOrbit", new KeyTrigger(KeyInput.KEY_O));
+		inputManager.addListener(actionListenerHideOrbit,"HideOrbit");
+
 		// Pour afficher du texte
 		BitmapFont font = assetManager.loadFont("Interface/Fonts/Default.fnt");
         hudText = new BitmapText(font);
-        hudText.setSize(font.getCharSet().getRenderedSize()*2); // Taille du texte
+        hudText.setSize(font.getCharSet().getRenderedSize()*((float)2.5)); // Taille du texte
         hudText.setColor(com.jme3.math.ColorRGBA.White); // Couleur blanche
         hudText.setText("Soleil"); // Texte initial
-        hudText.setLocalTranslation(10, settings.getHeight() - 60, 0); // Position en haut à gauche
+        hudText.setLocalTranslation(20, settings.getHeight() - 60, 0); // Position en haut à gauche
         guiNode.attachChild(hudText);
 
 		// Pour ajouter un fond
 		viewPort.setBackgroundColor(null);
         Texture skyTexture = assetManager.loadTexture("Textures/Terrain/Espace.jpg");
         rootNode.attachChild(SkyFactory.createSky(assetManager, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture, skyTexture));
+
+		//initUI();
 	}
+
+	// private void initUI() {
+    //     Container container = new Container();
+    //     container.setLocalTranslation(10, settings.getHeight() - 10, 0);
+    //     guiNode.attachChild(container);
+
+    //     Label label = container.addChild(new Label("Vitesse du Temps"));
+    //     Slider slider = container.addChild(new Slider());
+    //     slider.setDelta(0.1f);
+    //     slider.setModel(new DefaultRangedValueModel(-1000000f, 1000000f, facteurTemps));
+    //     slider.setSnapValues(new float[]{0.01f, 0.1f}, false);
+    //     slider.addChangeListener((source, value) -> facteurTemps = value.floatValue());
+    // }
 
 	/* Use the main event loop to trigger repeating actions. */
 	@Override
@@ -204,6 +281,7 @@ public class SystemeSolaire extends SimpleApplication {
 
 		Date date = new Date((long)(time));
 		dateLabel.setText(formatDate.format(date));
+		facteurLabel.setText("x"+facteurTemps);
 
 		for (Planet p : planetes) {
 			//p.update(facteurTemps*tpf);
@@ -250,12 +328,43 @@ public class SystemeSolaire extends SimpleApplication {
 		}
 	};
 
+	private ActionListener actionListenerHideOrbit = new ActionListener() {
+		@Override
+			public void onAction(String name, boolean isPressed, float tpf) {
+				if (isPressed) {
+					List<Planet> systemeOrdonne = new ArrayList<>();
+					for (Planet planete : planetes) {
+						if (!planete.getNom().equals("Soleil")){
+							systemeOrdonne.add(planete);
+							if (planete.getSatellites()!=null) {
+								for (Planet sat : planete.getSatellites()) {
+									systemeOrdonne.add(sat);
+								}
+							}
+						}
+					}
+					for (Planet p : systemeOrdonne) {
+						if (p.getOrbite().getOrbiteNode().getCullHint().equals(Spatial.CullHint.Always)) {
+							p.getOrbite().getOrbiteNode().setCullHint(Spatial.CullHint.Inherit);
+						}
+						else {
+							p.getOrbite().getOrbiteNode().setCullHint(Spatial.CullHint.Always);
+						}
+
+					}
+				}
+			}
+		};
+
 	private ActionListener actionListenerSpeed = new ActionListener() {
 	@Override
 		public void onAction(String name, boolean isPressed, float tpf) {
 			if (isPressed) {
 				if (name.equals("Forward")) {
 					if (facteurTemps==-1) {
+						facteurTemps = 0;
+					}
+					else if (facteurTemps==0) {
 						facteurTemps = 1;
 					}
 					else if (facteurTemps < -1) {
@@ -267,6 +376,9 @@ public class SystemeSolaire extends SimpleApplication {
 				}
 				if (name.equals("Rewind")) {
 					if (facteurTemps==1) {
+						facteurTemps = 0;
+					}
+					else if (facteurTemps==0) {
 						facteurTemps = -1;
 					}
 					else if (facteurTemps > 1) {
@@ -306,6 +418,8 @@ public class SystemeSolaire extends SimpleApplication {
 				chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*2);
 				chaseCam.setZoomSensitivity(systemeOrdonne.get(indexPlanete).getTaillePlanete());
 				hudText.setText(systemeOrdonne.get(indexPlanete).getNom());
+				diametre.setText("diamètre : "+ diametres[indexPlanete]);
+				masse.setText("masse : "+  masses[indexPlanete]);
 			}
 		};
 	};
