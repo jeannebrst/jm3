@@ -143,27 +143,29 @@ public class SystemeSolaire extends SimpleApplication {
 		formatDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		refTime = System.currentTimeMillis();
 		antTime = System.currentTimeMillis();
-
-		GuiGlobals.initialize(this); // Initialisation Lemur
+		
+		// affichage date/heure
+		GuiGlobals.initialize(this);
 		dateLabel = new Label("Date");
 		dateLabel.setFontSize(30);
 		dateLabel.setColor(ColorRGBA.White);
 		dateLabel.setLocalTranslation(settings.getWidth()-450, settings.getHeight() - 1000, 0);
 		guiNode.attachChild(dateLabel);
 
+		//affichage coeff multiplicateur du temps
 		facteurLabel = new Label("Facteur");
 		facteurLabel.setFontSize(30);
 		facteurLabel.setColor(ColorRGBA.White);
 		facteurLabel.setLocalTranslation(settings.getWidth()-150, settings.getHeight() - 1000, 0);
 		guiNode.attachChild(facteurLabel);
 
+		//affichage diametres + masse
 		diametre = new Label("diamètre");
 		diametre.setFontSize(35);
 		diametre.setColor(ColorRGBA.White);
 		diametre.setLocalTranslation(20, settings.getHeight() - 150, 0);
 		diametre.setText("diamètre : "+diametres[0]);
 		guiNode.attachChild(diametre);
-
 		masse = new Label("masse");
 		masse.setFontSize(35);
 		masse.setColor(ColorRGBA.White);
@@ -171,6 +173,7 @@ public class SystemeSolaire extends SimpleApplication {
 		masse.setText("masse : "+ masses[0]);
 		guiNode.attachChild(masse);
 
+		// affichage rectangle transparent derrière texte
 		Quad quad = new Quad(470,270);
 		Geometry rectangle = new Geometry("Rectangle transparent", quad);
 		Material matRectangle = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -180,6 +183,7 @@ public class SystemeSolaire extends SimpleApplication {
 		rectangle.setLocalTranslation(0,settings.getHeight()-300,0);
 		guiNode.attachChild(rectangle);
 
+		//les modèles à charger pour les astéroïdes
 		String[] models = {
             "Models/Asteroides/Eros.glb",
 			"Models/Asteroides/Itokawa.glb",
@@ -187,6 +191,7 @@ public class SystemeSolaire extends SimpleApplication {
 			//"Models/Asteroides/Bennu.glb"
         };
 
+		//on pose les astéroïdes dans l'app
 		Asteroide asteroideGenerator = new Asteroide(assetManager, models);
         asteroideGenerator.generateAsteroids(planetes.get(0).getOrbitePlanete());
 		
@@ -277,8 +282,10 @@ public class SystemeSolaire extends SimpleApplication {
 		dateLabel.setText(formatDate.format(date));
 		facteurLabel.setText("x"+facteurTemps);
 
+		// je fais tourner le node du soleil pcq les astéroïdes y sont attachés, du coup soleil + astéroïdes tournent (pas en vitesse réelle)
 		planetes.get(0).getOrbitePlanete().rotate(0,0.00000000001f*facteurTemps,0);
 
+		// je fais tourner mes astres sur eux memes et sur leurs orbites
 		for (Planet p : planetes) {
 			if (p.getNom()!="Soleil"){
 				p.rotate(time);

@@ -141,6 +141,7 @@
 	</dependencies>
   
 	<build>
+		<finalName>SystemeSolaire</finalName>
 		<plugins>
 
 			<!--  Compile sources -->
@@ -213,6 +214,31 @@
 							</descriptors>
 						</configuration>
 					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+				<archive>
+				<manifest>
+				<mainClass>fr.utln.jmonkey.tutorials.beginner.projetTP.SystemeSolaire</mainClass>
+				</manifest>
+				</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+				<execution>
+				<phase>package</phase>
+				<goals>
+				<goal>shade</goal>
+				</goals>
+				</execution>
 				</executions>
 			</plugin>
 		</plugins>
