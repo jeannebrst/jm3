@@ -114,15 +114,20 @@ public class SystemeSolaire extends SimpleApplication {
 		planetes.add(new Planet(assetManager, "Uranus", 2.53f, 30687.15f, -0.7183f, 2875+planetes.get(0).getTaillePlanete(), 0.046f,97.8f,0.772f));
 		planetes.add(new Planet(assetManager, "Neptune", 2.4622f, 60224.9036f, 0.6712f, 4504+planetes.get(0).getTaillePlanete(), 0.0086f,29.58f,1.769f));
 		
-		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 27.3220f, 27.322f, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f,5.145f);
+		//Planet lune = new Planet(assetManager, "Lune", 0.17374f, 27.3220f, 27.322f, planetes.get(3).getTaillePlanete()+3.844f, 0.0554f,1.54f,5.145f);
+		Planet lune = new Planet(assetManager, "Lune", 0.17374f, 27.3220f, 27.322f, planetes.get(3).getTaillePlanete()+3.844f, 0,1.54f,0);
 		planetes.get(3).addSatellites(lune);
-		Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.3189f, 0.3189f, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0,1.075f);
+		//Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.3189f, 0.3189f, planetes.get(4).getTaillePlanete()+0.93771f, 0.015f,0,1.075f);
+		Planet phobos = new Planet(assetManager, "Phobos", 0.11267f, 0.3189f, 0.3189f, planetes.get(4).getTaillePlanete()+0.93771f, 0,0,0);
 		planetes.get(4).addSatellites(phobos);
-		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 1.2624f, 1.2624f, planetes.get(4).getTaillePlanete()+2.3460f, 0,0,1.075f);
+		//Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 1.2624f, 1.2624f, planetes.get(4).getTaillePlanete()+2.3460f, 0,0,1.075f);
+		Planet deimos = new Planet(assetManager, "Deimos", 0.06f, 1.2624f, 1.2624f, planetes.get(4).getTaillePlanete()+2.3460f, 0,0,0);
 		planetes.get(4).addSatellites(deimos);
-		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.551f, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f,0.466f);
+		//Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.551f, planetes.get(5).getTaillePlanete()+8.71f, 0.0094f,0.47f,0.466f);
+		Planet europe = new Planet(assetManager, "Europe", 0.15608f, 3.551f, 3.551f, planetes.get(5).getTaillePlanete()+8.71f, 0,0.47f,0);
 		planetes.get(5).addSatellites(europe);
-		Planet io = new Planet(assetManager, "Io", 0.18216f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
+		//Planet io = new Planet(assetManager, "Io", 0.18216f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0.004f,0.03f,0.036f);
+		Planet io = new Planet(assetManager, "Io", 0.18216f, 1.769f, 1.769f, planetes.get(5).getTaillePlanete()+4.218f, 0,0.03f,0);
 		planetes.get(5).addSatellites(io);
 
 		for (Planet p : planetes) {
