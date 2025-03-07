@@ -2,6 +2,7 @@ package fr.utln.jmonkey.tutorials.beginner.projetTP;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
+import com.jme3.math.FastMath;
 import com.jme3.scene.Spatial;
 import java.util.Arrays;
 import com.jme3.scene.Node;
@@ -12,7 +13,7 @@ public class Asteroide {
 
 	private final float minRadius = 5000;
 	private final float maxRadius = 8000;
-    private final int numAsteroids = 500;
+    private final int numAsteroids = 1000;
 	private String[] asteroidModels;
     private Spatial[] asteroidSpatials;
 
@@ -47,6 +48,7 @@ public class Asteroide {
 			String modelPath = asteroidModels[random.nextInt(asteroidModels.length)];
             int index = Arrays.asList(asteroidModels).indexOf(modelPath); // Trouver l'index
             Spatial asteroid = asteroidSpatials[index].clone();
+            asteroid.rotate(random.nextFloat()*FastMath.TWO_PI,random.nextFloat()*FastMath.TWO_PI,random.nextFloat()*FastMath.TWO_PI);
 
             // Charger un modèle 3D pour représenter l'astéroïde, par exemple une sphère
             asteroid.setLocalTranslation(position);

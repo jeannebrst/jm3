@@ -247,4 +247,8 @@ public class Planet {
 	public Orbite getOrbite() {
 		return orbite;
 	}
+
+	public void setVitesseRotation(float vitesseRotation) {
+		this.vitesseRotation = vitesseRotation;
+	}
 }

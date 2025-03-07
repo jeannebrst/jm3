@@ -178,12 +178,12 @@ public class SystemeSolaire extends SimpleApplication {
 		String[] models = {
             "Models/Asteroides/Eros.glb",
 			"Models/Asteroides/Itokawa.glb",
-			"Models/Asteroides/Vesta.glb",
-			"Models/Asteroides/Bennu.glb"
+			"Models/Asteroides/Vesta.glb"
+			//"Models/Asteroides/Bennu.glb"
         };
 
 		Asteroide asteroideGenerator = new Asteroide(assetManager, models);
-        asteroideGenerator.generateAsteroids(rootNode);
+        asteroideGenerator.generateAsteroids(planetes.get(0).getOrbitePlanete());
 		
 		// Pour que le soleil soit une source de lumière
 		PointLight sunLight = new PointLight();
@@ -271,6 +271,8 @@ public class SystemeSolaire extends SimpleApplication {
 		Date date = new Date((long)(time));
 		dateLabel.setText(formatDate.format(date));
 		facteurLabel.setText("x"+facteurTemps);
+
+		planetes.get(0).getOrbitePlanete().rotate(0,0.00000000001f*facteurTemps,0);
 
 		for (Planet p : planetes) {
 			if (p.getNom()!="Soleil"){
