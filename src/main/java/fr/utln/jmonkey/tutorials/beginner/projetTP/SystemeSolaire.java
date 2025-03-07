@@ -415,7 +415,18 @@ public class SystemeSolaire extends SimpleApplication {
 				}
 				chaseCam.setSpatial(systemeOrdonne.get(indexPlanete).getPlanete());
 				chaseCam.setDefaultDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*20);
-				chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*2);
+				if (systemeOrdonne.get(indexPlanete).getNom().equals("Phobos")) {
+					chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*10);
+				}
+				else if (systemeOrdonne.get(indexPlanete).getNom().equals("Deimos")) {
+					chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*18);
+				}
+				else if (systemeOrdonne.get(indexPlanete).getNom().equals("Europe")) {
+					chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*9);
+				}
+				else {
+					chaseCam.setMinDistance(systemeOrdonne.get(indexPlanete).getTaillePlanete()*7);
+				}
 				chaseCam.setZoomSensitivity(systemeOrdonne.get(indexPlanete).getTaillePlanete());
 				hudText.setText(systemeOrdonne.get(indexPlanete).getNom());
 				diametre.setText("diamètre : "+ diametres[indexPlanete]);
